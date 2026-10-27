@@ -73,7 +73,7 @@ export function Footer() {
                 </a>
               )}
               {settings.whatsapp && (
-                <a href={waHref(settings)} target="_blank" rel="noreferrer" className="grid h-10 w-10 place-items-center rounded-full bg-white/[0.08] transition-colors hover:bg-white hover:text-ink" aria-label="WhatsApp">
+                <a href={waHref(settings, t('waGeneral'))} target="_blank" rel="noreferrer" className="grid h-10 w-10 place-items-center rounded-full bg-white/[0.08] transition-colors hover:bg-white hover:text-ink" aria-label="WhatsApp">
                   <WhatsAppIcon className="h-[18px] w-[18px]" />
                 </a>
               )}

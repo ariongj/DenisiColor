@@ -16,6 +16,7 @@ import { usePageTitle } from '@/site/layout/SiteLayout';
 import { CheckoutSteps, TotalsRows, useCopy, useDiscountRows, useItemsLabel } from '@/site/components/checkout/parts';
 import { Confetti, SuccessCheck } from '@/site/components/checkout/Celebrate';
 import { ck } from '@/site/components/checkout/dict';
+import { OrderWhatsApp } from '@/site/components/whatsapp/OrderActions';
 
 const T = defineDict({
   me: {
@@ -333,6 +334,7 @@ function Success({ order }: { order: Order }) {
             </button>
           </div>
           <p className="mt-3 animate-fade-up text-[12.5px] text-muted [animation-delay:520ms]">{t('placedAt', { date: `${siteDate(order.createdAt, lang)}, ${new Date(order.createdAt).toTimeString().slice(0, 5)}` })}</p>
+          <OrderWhatsApp order={order} className="mt-7 animate-fade-up [animation-delay:600ms]" />
         </div>
       </section>
 

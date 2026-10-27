@@ -1,11 +1,13 @@
 import { Link } from 'react-router';
 import { toast } from 'sonner';
-import { Heart, Plus, ArrowUpRight, MessageCircle } from 'lucide-react';
+import { Heart, Plus, ArrowUpRight, MessageCircle, ClipboardCheck, ClipboardPlus } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { Badge } from '@/components/ui/misc';
 import { AdImage } from './AdImage';
 import { Price } from './Price';
 import { needsQuote, useWhatsApp } from './quote';
+import { QL } from './quotelist/dict';
+import { useAddToQuote, useQtyInList } from './quotelist/shared';
 import { WhatsAppIcon } from '@/components/brand/Social';
 import { useDict, useL } from '@/i18n';
 import { site } from '@/i18n/site';
@@ -98,6 +100,8 @@ export function ProductCard({ product, className, priority }: { product: Product
         </h3>
         <div className="mt-auto flex items-end justify-between gap-2 pt-2.5">
           <Price product={product} size="sm" />
+          {quote && <span className="ml-auto" />}
+          {quote && <QuoteListButton product={product} />}
           {quote && wa.enabled && (
             <a
               href={wa.product(product)}
@@ -113,5 +117,28 @@ export function ProductCard({ product, className, priority }: { product: Product
         </div>
       </div>
     </article>
+  );
+}
+
+/** Small "add to quote list" icon on request-a-price cards (1 piece, default options; quantity is set in the list). */
+function QuoteListButton({ product }: { product: Product }) {
+  const tq = useDict(QL);
+  const addToQuote = useAddToQuote();
+  const inList = useQtyInList(product.id) > 0;
+  const setQuoteOpen = useUi((s) => s.setQuoteOpen);
+  const label = inList ? tq('viewList') : tq('addToList');
+  return (
+    <button
+      type="button"
+      onClick={() => (inList ? setQuoteOpen(true) : addToQuote(product, 1, defaultOptions(product)))}
+      aria-label={label}
+      title={label}
+      className={cn(
+        'grid h-8 w-8 shrink-0 place-items-center rounded-full transition-colors',
+        inList ? 'bg-amber-400 text-brand-900 hover:bg-amber-300' : 'bg-brand-600/10 text-brand-700 hover:bg-brand-600 hover:text-white',
+      )}
+    >
+      {inList ? <ClipboardCheck className="h-4 w-4" /> : <ClipboardPlus className="h-4 w-4" />}
+    </button>
   );
 }

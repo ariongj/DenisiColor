@@ -15,6 +15,7 @@ import { Breadcrumbs, SectionHeading } from '@/site/components/SectionHeading';
 import { ProductCard } from '@/site/components/ProductCard';
 import { CheckoutSteps, CouponBox, TotalsRows, TrustNotes, useItemsLabel, useTotalsView } from '@/site/components/checkout/parts';
 import { WhatsAppLink } from '@/site/components/quote';
+import { CartWhatsApp } from '@/site/components/whatsapp/OrderActions';
 
 const T = defineDict({
   me: {
@@ -225,6 +226,7 @@ export default function CartPage() {
                     <Lock className="h-3.5 w-3.5" />
                     {t('payMethods')}
                   </p>
+                  <CartWhatsApp totals={totals} className="mt-5 border-t border-line pt-5" />
                 </div>
                 <TrustNotes className="mt-6 px-1" />
               </aside>

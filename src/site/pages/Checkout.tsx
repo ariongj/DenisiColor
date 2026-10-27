@@ -19,6 +19,8 @@ import { usePageTitle } from '@/site/layout/SiteLayout';
 import { CheckoutSteps, CompactLine, CouponBox, TotalsRows, TrustNotes, useItemsLabel, useTotalsView } from '@/site/components/checkout/parts';
 import { PaymentSim } from '@/site/components/checkout/PaymentSim';
 import { ck } from '@/site/components/checkout/dict';
+import { CheckoutWhatsApp } from '@/site/components/whatsapp/OrderActions';
+import type { WaCustomer } from '@/site/components/whatsapp/message';
 
 const T = defineDict({
   me: {
@@ -456,6 +458,9 @@ export default function Checkout() {
   const payDesc = { cod: t('codDesc'), bank: t('bankDesc'), card: t('cardDesc') } as const;
   const submitLabel = payment === 'card' ? t('payNow', { amount: money(totals.total, lang) }) : t('placeOrder');
 
+  // "order by message" alternative — the same order, prefilled with whatever the form already holds
+  const waCustomer: WaCustomer = { ...form, company: form.isCompany ? form.company : '', delivery, payment };
+
   const summaryLines = (
     <div className="divide-y divide-line">
       {totals.lines.map((line) => (
@@ -487,6 +492,7 @@ export default function Checkout() {
             <Accent text={t('title')} />
           </h1>
           <p className="mt-3 text-[15.5px] leading-relaxed text-muted">{t('subtitle')}</p>
+          <CheckoutWhatsApp variant="link" totals={totals} customer={waCustomer} className="mt-3" />
         </div>
 
         {/* Mobile summary toggle */}
@@ -717,6 +723,7 @@ export default function Checkout() {
                   <Lock className="h-3.5 w-3.5 shrink-0" />
                   {t('afterNote')}
                 </p>
+                <CheckoutWhatsApp variant="block" totals={totals} customer={waCustomer} className="mt-6" />
               </section>
             </fieldset>
           </form>

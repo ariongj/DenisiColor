@@ -12,6 +12,12 @@ import { cn } from '@/lib/utils';
 /** Product without a public price → "request a price" everywhere. */
 export const needsQuote = (p: Product) => !!p.quoteOnly || basePrice(p) <= 0;
 
+/**
+ * Short reference for an enquiry from the quote list ("KO-4F7Q2A"), shown to the shopper on the success
+ * screen and next to the request in the CMS. Derived from the inquiry id, so both sides always agree.
+ */
+export const quoteRef = (inquiryId: string) => `KO-${inquiryId.replace(/^[a-z]+_/i, '').slice(0, 6).toUpperCase()}`;
+
 /** Digits of the shop's WhatsApp number (falls back to the main phone). */
 export const waDigits = (s: Pick<Settings, 'whatsapp' | 'phone'>) => (s.whatsapp || s.phone || '').replace(/\D/g, '');
 

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link, NavLink, useLocation } from 'react-router';
-import { ArrowRight, ArrowUpRight, Heart, Menu, Phone, Search, ShoppingBag, MessageSquareText } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, ClipboardList, Heart, Menu, Phone, Search, ShoppingBag, MessageSquareText } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { Logo } from '@/components/brand/Logo';
 import { LangSwitcher } from '@/components/LangSwitcher';
@@ -17,6 +17,8 @@ import type { L10n } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { WhatsAppIcon } from '@/components/brand/Social';
 import { useWhatsApp } from '@/site/components/quote';
+import { QuoteDrawer } from '@/site/components/quotelist/QuoteDrawer';
+import { QL } from '@/site/components/quotelist/dict';
 
 /* ------------------------------------------------------------------ */
 /* Main menu (CMS → Menus "main"), with the built-in links as fallback  */
@@ -231,7 +233,10 @@ export function Header({ transparentTop = false }: { transparentTop?: boolean })
   const [mega, setMega] = useState<string | null>(null);
   const cartCount = useUi((s) => s.cart.length);
   const wishCount = useUi((s) => s.wishlist.length);
+  const quoteCount = useUi((s) => s.quoteList.length);
   const setCartOpen = useUi((s) => s.setCartOpen);
+  const setQuoteOpen = useUi((s) => s.setQuoteOpen);
+  const tq = useDict(QL);
   const setSearchOpen = useUi((s) => s.setSearchOpen);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { items: nav, fallback } = useMainNav();
@@ -314,6 +319,15 @@ export function Header({ transparentTop = false }: { transparentTop?: boolean })
               <Heart className="h-[19px] w-[19px]" />
               {wishCount > 0 && <span className="absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-brand-600 px-1 text-[10px] font-bold text-white">{wishCount}</span>}
             </Link>
+            {/* Quote list ("Lista e ofertës") — amber badge keeps it apart from the cart */}
+            <button className={iconBtn} onClick={() => setQuoteOpen(true)} aria-label={tq('listTitle')} title={tq('listTitle')}>
+              <ClipboardList className="h-[19px] w-[19px]" />
+              {quoteCount > 0 && (
+                <span key={quoteCount} className="absolute right-0.5 top-0.5 grid h-[18px] min-w-[18px] animate-pop place-items-center rounded-full bg-amber-400 px-1 text-[10px] font-bold text-brand-900 ring-2 ring-paper">
+                  {quoteCount}
+                </span>
+              )}
+            </button>
             <button className={iconBtn} onClick={() => setCartOpen(true)} aria-label={t('cart')}>
               <ShoppingBag className="h-[19px] w-[19px]" />
               {cartCount > 0 && (
@@ -340,6 +354,7 @@ export function Header({ transparentTop = false }: { transparentTop?: boolean })
         <AnimatePresence>{megaItem && <MegaMenu key={megaItem.id} item={megaItem} onClose={() => setMega(null)} />}</AnimatePresence>
       </header>
       <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} nav={nav} fallback={fallback} />
+      <QuoteDrawer />
     </>
   );
 }
@@ -355,6 +370,9 @@ interface MobileRow {
 
 function MobileMenu({ open, onClose, nav, fallback }: { open: boolean; onClose: () => void; nav: NavItem[]; fallback: boolean }) {
   const t = useDict(site);
+  const tq = useDict(QL);
+  const quoteCount = useUi((s) => s.quoteList.length);
+  const setQuoteOpen = useUi((s) => s.setQuoteOpen);
   const settings = useSettings();
   const wa = useWhatsApp();
   // The first dropdown with image tiles (Proizvodi) drives the category grid; its link becomes "All products".
@@ -413,6 +431,27 @@ function MobileMenu({ open, onClose, nav, fallback }: { open: boolean; onClose: 
             </div>
           ))}
         </nav>
+        <button
+          type="button"
+          onClick={() => {
+            onClose();
+            setQuoteOpen(true);
+          }}
+          className="mt-6 flex w-full items-center gap-3 rounded-2xl bg-white p-3.5 text-left ring-1 ring-line transition-colors hover:ring-ink/25"
+        >
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-amber-100 text-brand-800">
+            <ClipboardList className="h-5 w-5" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[15px] font-semibold text-ink">{tq('listTitle')}</span>
+            <span className="block truncate text-[12.5px] text-muted">{tq('listHint')}</span>
+          </span>
+          {quoteCount > 0 ? (
+            <span className="grid h-6 min-w-6 shrink-0 place-items-center rounded-full bg-amber-400 px-1.5 text-xs font-bold text-brand-900">{quoteCount}</span>
+          ) : (
+            <ArrowRight className="h-4 w-4 shrink-0 text-muted" />
+          )}
+        </button>
         <div className="mt-6 flex items-center justify-between">
           <LangSwitcher align="left" />
           <a href={`tel:${settings.phone.replace(/\s/g, '')}`} className="inline-flex items-center gap-2 text-sm font-semibold text-ink">

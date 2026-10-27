@@ -13,6 +13,7 @@ import { money, num, unitLabel } from '@/lib/format';
 import type { PricedLine } from '@/lib/pricing';
 import { cn } from '@/lib/utils';
 import { LineDiscounts } from '@/site/components/checkout/parts';
+import { CartWhatsApp } from '@/site/components/whatsapp/OrderActions';
 
 export function FreeShippingBar({ remaining, threshold, reason, className }: { remaining: number; threshold: number; reason: string | null; className?: string }) {
   const t = useDict(site);
@@ -139,7 +140,7 @@ export function CartDrawer() {
               </div>
               <p className="text-right text-[11.5px] text-muted">{tc('vatIncluded', { rate: settings.vatRate })}</p>
             </div>
-            <div className="mt-4 grid gap-2">
+            <div className="mt-4 grid gap-2.5">
               <Button
                 size="lg"
                 className="w-full"
@@ -151,15 +152,18 @@ export function CartDrawer() {
               >
                 {t('checkout')}
               </Button>
+              <CartWhatsApp totals={totals} />
               <Button
-                variant="outline"
-                className="w-full"
+                variant="ghost"
+                size="sm"
+                className="mx-auto"
                 onClick={() => {
                   setOpen(false);
                   navigate('/korpa');
                 }}
               >
                 {t('viewCart')}
+                <ArrowRight className="h-3.5 w-3.5" />
               </Button>
             </div>
           </div>

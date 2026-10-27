@@ -2,12 +2,15 @@ import { useState, type Ref } from 'react';
 import { Link } from 'react-router';
 import { toast } from 'sonner';
 import { AnimatePresence, motion } from 'motion/react';
-import { Banknote, Building2, Check, Clock, Heart, MessageCircle, Phone, Share2, ShieldCheck, ShoppingBag, Truck, Wrench, FileText, CreditCard } from 'lucide-react';
+import { ArrowRight, Banknote, Building2, Check, ClipboardCheck, ClipboardPlus, Clock, Heart, MessageCircle, Phone, Share2, ShieldCheck, ShoppingBag, Truck, Wrench, FileText, CreditCard } from 'lucide-react';
 import type { Category } from '@/lib/types';
 import { WhatsAppIcon } from '@/components/brand/Social';
 import { ProductBadges } from '@/site/components/ProductCard';
 import { Price } from '@/site/components/Price';
 import { needsQuote, waHref, WhatsAppLink } from '@/site/components/quote';
+import { QtyStepper } from '@/components/ui/misc';
+import { QL } from '@/site/components/quotelist/dict';
+import { MAX_QTY, useAddToQuote, useDraftQty, useQtyInList } from '@/site/components/quotelist/shared';
 import { useDict, useL, useLang } from '@/i18n';
 import { useUi } from '@/store/ui';
 import { useSettings } from '@/store/hooks';
@@ -73,6 +76,7 @@ export function BuyBox({ cfg, category, onAdd, onQuote, ctaRef }: { cfg: Configu
           <QuantityPicker cfg={cfg} />
           {cfg.canInstall && <InstallationCard cfg={cfg} />}
           <Summary cfg={cfg} onAdd={onAdd} ctaRef={ctaRef} />
+          <BulkRow cfg={cfg} />
         </div>
       )}
 
@@ -302,11 +306,30 @@ export function WishButton({ productId, tone = 'dark', className }: { productId:
 }
 
 /* ------------------------------------------------------------------ */
+/**
+ * Request-a-price products: the main action collects the product into the quote list ("Lista e ofertës") with
+ * quantity + options, so a contractor can ask for many items in one enquiry. The single-product form,
+ * WhatsApp and the phone stay as alternatives.
+ */
 function QuotePanel({ cfg, onQuote, ctaRef }: { cfg: Configurator; onQuote: () => void; ctaRef?: Ref<HTMLDivElement> }) {
   const t = useDict(PD);
+  const tq = useDict(QL);
+  const lang = useLang();
   const settings = useSettings();
   const p = cfg.product;
+  const [qty, setQty] = useDraftQty(p.id);
+  const addToQuote = useAddToQuote();
+  const inList = useQtyInList(p.id);
+  const setQuoteOpen = useUi((s) => s.setQuoteOpen);
+  const [justAdded, setJustAdded] = useState(false);
   const steps = [t('quoteStep1'), t('quoteStep2'), t('quoteStep3')];
+
+  const add = () => {
+    addToQuote(p, qty, cfg.options);
+    setJustAdded(true);
+    setTimeout(() => setJustAdded(false), 1800);
+  };
+
   return (
     <div className="space-y-6">
       <OptionPicker options={p.options} value={cfg.options} onChange={cfg.setOption} />
@@ -321,23 +344,110 @@ function QuotePanel({ cfg, onQuote, ctaRef }: { cfg: Configurator; onQuote: () =
             </li>
           ))}
         </ol>
-        <div ref={ctaRef} className="mt-6 flex gap-2.5">
+
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white/[0.06] py-2.5 pl-4 pr-2.5 ring-1 ring-white/10">
+          <span className="text-[13.5px] font-semibold text-paper/85">{tq('qty')}</span>
+          <span className="flex items-center gap-2.5">
+            <QtyStepper value={qty} onChange={setQty} max={MAX_QTY} />
+            <span className="w-9 text-[13px] font-medium text-paper/60">{unitLabel(p.unit, lang)}</span>
+          </span>
+        </div>
+        <div ref={ctaRef} className="mt-3 flex gap-2.5">
           <button
             type="button"
-            onClick={onQuote}
-            className="inline-flex h-14 flex-1 items-center justify-center gap-2.5 rounded-full bg-amber-400 px-6 text-[15.5px] font-bold text-brand-900 shadow-[inset_0_1px_0_rgb(255_255_255/0.3)] transition-[background,transform] duration-200 hover:bg-amber-300 active:scale-[0.98]"
+            onClick={add}
+            className="relative inline-flex h-14 flex-1 items-center justify-center gap-2.5 overflow-hidden rounded-full bg-amber-400 px-5 text-[15.5px] font-bold text-brand-900 shadow-[inset_0_1px_0_rgb(255_255_255/0.3)] transition-[background,transform] duration-200 hover:bg-amber-300 active:scale-[0.98]"
           >
-            <FileText className="h-5 w-5" /> {t('quoteTitle')}
+            <AnimatePresence mode="wait" initial={false}>
+              {justAdded ? (
+                <motion.span key="ok" initial={{ y: 16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -16, opacity: 0 }} className="inline-flex items-center gap-2.5">
+                  <Check className="h-5 w-5" strokeWidth={2.6} /> {tq('addedShort')}
+                </motion.span>
+              ) : (
+                <motion.span key="add" initial={{ y: 16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -16, opacity: 0 }} className="inline-flex items-center gap-2.5 text-center leading-tight">
+                  <ClipboardPlus className="h-5 w-5 shrink-0" /> {tq('addToList')}
+                </motion.span>
+              )}
+            </AnimatePresence>
           </button>
           <WishButton productId={p.id} />
         </div>
-        <div className="mt-3 grid gap-2 sm:grid-cols-2">
+        <AnimatePresence initial={false}>
+          {inList > 0 ? (
+            <motion.button
+              key="in"
+              type="button"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              onClick={() => setQuoteOpen(true)}
+              className="group mt-3 flex w-full items-center gap-2 overflow-hidden text-left text-[13px] font-semibold text-amber-300"
+            >
+              <ClipboardCheck className="h-4 w-4 shrink-0" />
+              <span className="tabular-nums">{tq('inList', { qty: `${inList} ${unitLabel(p.unit, lang)}` })}</span>
+              <span className="text-paper/40">·</span>
+              <span className="inline-flex items-center gap-1 underline decoration-amber-300/40 underline-offset-4 group-hover:decoration-amber-300">
+                {tq('viewList')} <ArrowRight className="h-3.5 w-3.5" />
+              </span>
+            </motion.button>
+          ) : (
+            <motion.p key="hint" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="mt-3 text-[12.5px] leading-snug text-paper/60">
+              {tq('listHint')}
+            </motion.p>
+          )}
+        </AnimatePresence>
+
+        <div className="mt-5 grid gap-2 border-t border-white/10 pt-5 sm:grid-cols-2">
+          <button
+            type="button"
+            onClick={onQuote}
+            className="flex h-12 items-center justify-center gap-2 rounded-full border border-white/20 text-[14px] font-semibold text-paper transition-colors hover:bg-white/10 sm:col-span-2"
+          >
+            <FileText className="h-4 w-4" /> {tq('onlyThis')}
+          </button>
           <WhatsAppLink product={p} className="h-12! w-full" />
           <a href={`tel:${settings.phone.replace(/\s/g, '')}`} className="flex h-12 items-center justify-center gap-2 rounded-full border border-white/15 text-[14px] font-semibold text-paper/90 transition-colors hover:bg-white/10">
             <Phone className="h-4 w-4" /> {settings.phone}
           </a>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/** Priced products: a quiet secondary path for bulk / company requests via the quote list. */
+function BulkRow({ cfg }: { cfg: Configurator }) {
+  const tq = useDict(QL);
+  const lang = useLang();
+  const p = cfg.product;
+  const addToQuote = useAddToQuote();
+  const inList = useQtyInList(p.id);
+  const setQuoteOpen = useUi((s) => s.setQuoteOpen);
+  return (
+    <div className="flex flex-wrap items-center gap-x-3.5 gap-y-3 rounded-2xl border border-dashed border-ink/20 bg-white/60 p-4">
+      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-amber-100 text-brand-800">
+        <Building2 className="h-5 w-5" />
+      </span>
+      <div className="min-w-0 flex-1 basis-48">
+        <div className="text-[14px] font-bold leading-tight text-ink">{tq('bulkTitle')}</div>
+        <div className="mt-0.5 text-[12.5px] leading-snug text-muted">
+          {inList > 0 ? (
+            <button type="button" onClick={() => setQuoteOpen(true)} className="inline-flex items-center gap-1 font-semibold text-brand-700 hover:underline">
+              <ClipboardCheck className="h-3.5 w-3.5" /> {tq('inList', { qty: `${inList} ${unitLabel(p.unit, lang)}` })} · {tq('viewList')}
+            </button>
+          ) : (
+            tq('bulkText')
+          )}
+        </div>
+      </div>
+      <button
+        type="button"
+        onClick={() => addToQuote(p, cfg.qty, cfg.options)}
+        className="inline-flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-full bg-ink px-4 text-[13px] font-semibold text-white transition-colors hover:bg-brand-800 max-sm:w-full"
+      >
+        <ClipboardPlus className="h-4 w-4" /> {tq('addShort')}
+      </button>
     </div>
   );
 }

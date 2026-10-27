@@ -5,6 +5,7 @@ import { Header } from './Header';
 import { Footer } from './Footer';
 import { CartDrawer } from './CartDrawer';
 import { SearchOverlay } from './SearchOverlay';
+import { FloatingWhatsApp } from '@/site/components/whatsapp/FloatingWhatsApp';
 import { useDict, LANGS, useLang } from '@/i18n';
 import { site } from '@/i18n/site';
 import { useSettings } from '@/store/hooks';
@@ -66,6 +67,7 @@ export function SiteLayout() {
       <CartDrawer />
       <SearchOverlay />
       <DemoBadge />
+      <FloatingWhatsApp />
     </div>
   );
 }
