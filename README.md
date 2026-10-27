@@ -34,8 +34,8 @@ Production build: `npm run build` (static files in `dist/`), then `npm run previ
 
 ## Deploy
 
-- **GitHub Pages**: `.github/workflows/pages.yml` builds on every push to `main` with `BASE_PATH=/DenisiColor/`. The
-  site then lives at `https://<user>.github.io/DenisiColor/`. Enable it under Settings → Pages → Source: GitHub Actions.
+- **GitHub Pages**: `.github/workflows/pages.yml` builds on every push to `main` with `BASE_PATH=/DenisiColor/` and
+  publishes the result to the `gh-pages` branch, which Pages serves at https://ariongj.github.io/DenisiColor/.
 - **Vercel / Netlify**: works as is at the root (`vercel.json` / `public/_redirects`).
 
 ## What is real and what is placeholder
