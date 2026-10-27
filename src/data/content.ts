@@ -120,7 +120,7 @@ export function buildHome(_now = new Date()): HomeSection[] {
               'In Shtime and across Kosovo — order online, by WhatsApp message or by phone, and we deliver to your door.',
             ),
             primary: { label: T('Pogledajte proizvode', 'Shikoni produktet', 'Browse products'), href: '/proizvodi' },
-            secondary: { label: T('Pišite nam', 'Na shkruani', 'Message us'), href: '/kontakt' },
+            secondary: { label: T('Probajte boju', 'Provo ngjyrën', 'Try a colour'), href: '/ngjyra' },
           },
           {
             id: 's2',
@@ -146,7 +146,7 @@ export function buildHome(_now = new Date()): HomeSection[] {
               'Sensor ceiling lights, IP54 wall lights, IP65 street lights and LED strips with aluminium profiles.',
             ),
             primary: { label: T('Rasveta', 'Shikoni ndriçimin', 'Shop lighting'), href: '/proizvodi/ndricim' },
-            secondary: { label: T('LED trake i profili', 'LED shirita & profile', 'LED strips & profiles'), href: '/proizvodi/led-shirita' },
+            secondary: { label: T('Planirajte rasvetu', 'Planifiko ndriçimin', 'Plan your lighting'), href: '/ndricimi' },
           },
         ],
       },

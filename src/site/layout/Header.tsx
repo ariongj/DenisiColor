@@ -240,7 +240,6 @@ export function Header({ transparentTop = false }: { transparentTop?: boolean })
   const setSearchOpen = useUi((s) => s.setSearchOpen);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { items: nav, fallback } = useMainNav();
-  const wa = useWhatsApp();
   const settings = useSettings();
 
   useEffect(() => {
@@ -338,16 +337,10 @@ export function Header({ transparentTop = false }: { transparentTop?: boolean })
             </button>
             {/* Wrapper carries the breakpoint: the button's own `inline-flex` would win over `hidden` (cn has no tailwind-merge). */}
             <span className="ml-2 hidden xl:inline-flex">
-              {wa.enabled ? (
-                <a href={wa.general} target="_blank" rel="noreferrer" className={buttonClass({ variant: solid ? 'primary' : 'light', size: 'sm' })}>
-                  <WhatsAppIcon className="h-4 w-4" />
-                  {t('freeMeasure')}
-                </a>
-              ) : (
-                <ButtonLink to="/kontakt#kerkesa" variant={solid ? 'primary' : 'light'} size="sm" icon={<MessageSquareText className="h-4 w-4" />}>
-                  {t('bookMeasure')}
-                </ButtonLink>
-              )}
+              {/* WhatsApp lives in the floating button — the header CTA goes to the multi-product quote list */}
+              <ButtonLink to="/lista-ofertes" variant={solid ? 'primary' : 'light'} size="sm" icon={<ClipboardList className="h-4 w-4" />}>
+                {t('bookMeasure')}
+              </ButtonLink>
             </span>
           </div>
         </div>

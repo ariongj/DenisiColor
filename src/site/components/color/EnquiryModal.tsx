@@ -1,6 +1,6 @@
 // "Request an offer for these colours" — a compact form that creates a CMS enquiry (type quote) with the
 // picked colours attached (`Inquiry.colors`), plus a success state with a WhatsApp follow-up.
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { CheckCircle2, Send } from 'lucide-react';
 import { Modal } from '@/components/ui/Overlay';
 import { Button } from '@/components/ui/Button';
@@ -65,7 +65,7 @@ export function EnquiryModal({ open, onClose, scene, paints }: { open: boolean; 
   const list = lines(form.type, paints[form.type]);
   const sceneName = (s: SceneId) => t(s === 'facade' ? 'sceneFacade' : 'sceneInterior');
 
-  const submit = (e: React.FormEvent) => {
+  const submit = (e: FormEvent) => {
     e.preventDefault();
     if (!form.name.trim() || !form.phone.trim()) {
       setError(t('required'));
