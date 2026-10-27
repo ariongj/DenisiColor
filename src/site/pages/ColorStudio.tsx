@@ -271,8 +271,8 @@ export default function ColorStudio() {
           {/* ---------- schemes ---------- */}
           <div className="lg:col-start-1 lg:row-start-2">
             <div className="mb-3 flex items-baseline justify-between gap-3">
-              <h2 className="display text-[19px] text-ink">{t('schemes')}</h2>
-              <span className="text-[13px] text-muted">{t('schemesHint')}</span>
+              <h2 className="display text-[17px] text-ink sm:text-[19px]">{t('schemes')}</h2>
+              <span className="text-[13px] text-muted max-sm:hidden">{t('schemesHint')}</span>
             </div>
             <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
               {SCHEMES.map((s) => {
