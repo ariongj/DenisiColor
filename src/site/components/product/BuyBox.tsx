@@ -348,7 +348,7 @@ function QuotePanel({ cfg, onQuote, ctaRef }: { cfg: Configurator; onQuote: () =
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white/[0.06] py-2.5 pl-4 pr-2.5 ring-1 ring-white/10">
           <span className="text-[13.5px] font-semibold text-paper/85">{tq('qty')}</span>
           <span className="flex items-center gap-2.5">
-            <QtyStepper value={qty} onChange={setQty} max={MAX_QTY} />
+            <QtyStepper value={qty} onChange={setQty} max={MAX_QTY} className="text-ink" />
             <span className="w-9 text-[13px] font-medium text-paper/60">{unitLabel(p.unit, lang)}</span>
           </span>
         </div>

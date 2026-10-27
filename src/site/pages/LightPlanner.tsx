@@ -217,7 +217,7 @@ export default function LightPlanner() {
                       <span className="text-[13px] font-semibold text-paper/80">{t('unitsLabel')}</span>
                     </div>
                   </div>
-                  <div className="mt-4 grid gap-4 xl:grid-cols-2">
+                  <div className="mt-4 grid gap-4">
                     <AnimatePresence initial={false}>
                       {plans.map((pl) => (
                         <motion.div

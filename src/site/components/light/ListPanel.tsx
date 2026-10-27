@@ -74,12 +74,12 @@ export function ListPanel({
         if (!pl) return '';
         const per = part.qty / pl.mult;
         const unit = line.unit === 'm' ? ' m' : '';
-        return `${roomText(pl)} (${n(per)}${unit}${pl.mult > 1 ? ` × ${pl.mult}` : ''})`;
+        const where = line.unit === 'm' ? `${labels[pl.room.id]} ${n(pl.room.area)} m²` : roomText(pl);
+        return `${where} (${n(per)}${unit}${pl.mult > 1 ? ` × ${pl.mult}` : ''})`;
       })
       .filter(Boolean)
       .join('; ');
-    const head = line.unit === 'm' ? `${t('noteHead')} — ${t('metresNote', { m: n(line.qty) })}` : t('noteHead');
-    return `${head}: ${parts}`;
+    return `${t('noteHead')}: ${parts}${line.unit === 'm' ? ` — ${t('metresNote', { m: n(line.qty) })}` : ''}`;
   };
 
   const addAll = () => {
@@ -148,7 +148,7 @@ export function ListPanel({
         </div>
       ) : (
         <>
-          <ul className="divide-y divide-line">
+          <ul className="divide-y divide-line lg:max-h-[calc(100vh-480px)] lg:min-h-[200px] lg:overflow-y-auto">
             {live.map((x) => {
               const p = products[x.productId]!;
               const edited = autoQty[x.key] !== undefined && autoQty[x.key] !== x.qty;
@@ -193,7 +193,6 @@ export function ListPanel({
                         </button>
                       )}
                     </div>
-                    {x.unit === 'm' && <p className="mt-1.5 text-[11px] leading-snug text-muted">{t('metresNote', { m: n(x.qty) })}</p>}
                   </div>
                 </li>
               );
@@ -216,6 +215,7 @@ export function ListPanel({
             )}
             <p className="pt-1 text-center text-[11.5px] leading-snug text-muted">
               {t('priceNote')}
+              {ledM > 0 && ` ${t('metresShort')}`}
             </p>
           </div>
         </>

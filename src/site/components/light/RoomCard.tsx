@@ -40,7 +40,7 @@ export function RoomCard({ plan, label, onChange, onDuplicate, onRemove }: { pla
         </button>
       </header>
 
-      <div className="grid gap-5 p-4 sm:grid-cols-[132px_1fr] sm:p-5">
+      <div className="grid gap-5 p-4 sm:grid-cols-[140px_1fr] sm:p-5">
         {/* Light preview */}
         <div className="flex items-center gap-3 sm:flex-col sm:items-stretch">
           <RoomSketch cct={room.cct} mount={mountOf(plan.fixture)} outdoor={p.outdoor} className="h-20 w-28 shrink-0 rounded-xl ring-1 ring-black/5 sm:h-24 sm:w-full" />
@@ -53,7 +53,7 @@ export function RoomCard({ plan, label, onChange, onDuplicate, onRemove }: { pla
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="grid content-start gap-x-8 gap-y-4 md:grid-cols-2">
           {/* Area */}
           <div>
             <div className="mb-1.5 flex items-center justify-between gap-3">
@@ -101,7 +101,7 @@ export function RoomCard({ plan, label, onChange, onDuplicate, onRemove }: { pla
                 <label htmlFor={`h-${room.id}`} className="mb-1.5 block text-[13px] font-semibold text-ink">
                   {t('height')}
                 </label>
-                <div className="relative">
+                <div className="relative w-fit">
                   <input
                     id={`h-${room.id}`}
                     type="number"
@@ -127,7 +127,7 @@ export function RoomCard({ plan, label, onChange, onDuplicate, onRemove }: { pla
           </div>
 
           {/* Light colour */}
-          <div>
+          <div className="md:col-span-2">
             <div className="mb-1.5 text-[13px] font-semibold text-ink">{t('cct')}</div>
             {p.cctFixed ? (
               <p className="text-[12.5px] text-muted">{t('cctFixed')}</p>
@@ -165,7 +165,7 @@ export function RoomCard({ plan, label, onChange, onDuplicate, onRemove }: { pla
 
           {/* LED strip accent (living room / kitchen) */}
           {!!p.accentShare && (
-            <div className={cn('rounded-xl border border-dashed p-3 transition-colors', room.accent ? 'border-brand-300 bg-brand-50/50' : 'border-line')}>
+            <div className={cn('flex flex-wrap items-center justify-between gap-3 rounded-xl border border-dashed p-3 transition-colors md:col-span-2', room.accent ? 'border-brand-300 bg-brand-50/50' : 'border-line')}>
               <Switch
                 size="sm"
                 checked={room.accent}
@@ -178,7 +178,7 @@ export function RoomCard({ plan, label, onChange, onDuplicate, onRemove }: { pla
                 }
               />
               {room.accent && (
-                <div className="mt-3">
+                <div>
                   <Seg
                     value={room.strip}
                     onChange={(v: StripType) => onChange({ strip: v })}

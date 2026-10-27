@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Link } from 'react-router';
 import { toast } from 'sonner';
 import { AnimatePresence, motion } from 'motion/react';
@@ -96,10 +96,7 @@ export default function QuoteListPage() {
               <HowItWorks className="mt-10 max-lg:hidden" />
             </div>
             <div className="lg:col-span-5 lg:sticky lg:top-[100px]">
-              <RequestForm lines={lines} onSent={(s) => {
-                setSent(s);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }} />
+              <RequestForm lines={lines} onSent={setSent} />
             </div>
             <HowItWorks className="lg:hidden" />
           </div>
@@ -337,6 +334,13 @@ function Success({ sent, onRestore }: { sent: Sent; onRestore: () => void }) {
   const lang = useLang();
   const settings = useSettings();
   const steps = [tq('next1'), tq('next2'), tq('next3')];
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Bring the confirmation into view (the form may have been far down the page, especially on phones)
+  useEffect(() => {
+    const el = ref.current;
+    if (el) window.scrollTo({ top: Math.max(0, el.getBoundingClientRect().top + window.scrollY - 96), behavior: 'smooth' });
+  }, []);
 
   const restore = () => {
     const keys = new Set(sent.lines.map((x) => x.item.key));
@@ -346,7 +350,7 @@ function Success({ sent, onRestore }: { sent: Sent; onRestore: () => void }) {
   };
 
   return (
-    <div className="mx-auto max-w-5xl animate-fade-up">
+    <div ref={ref} className="mx-auto max-w-5xl animate-fade-up">
       <div className="overflow-hidden rounded-[32px] bg-white ring-1 ring-line">
         <div className="bg-stripes relative bg-brand-900 px-6 py-10 text-center text-paper sm:px-10 sm:py-12">
           <span className="mx-auto grid h-16 w-16 animate-pop place-items-center rounded-full bg-amber-400 text-brand-900">

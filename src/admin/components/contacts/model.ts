@@ -70,6 +70,7 @@ export const sourceKey = (s: SourceId) => `src_${s.replace('-', '_')}` as 'src_w
 export function sourcePath(q: Inquiry, productSlug?: string): string | null {
   const s = sourceOf(q);
   if (s === 'phone' || s === 'manual') return null;
+  if (q.lines?.length) return '/lista-ofertes';
   if (productSlug) return `/proizvod/${productSlug}`;
   if (s === 'measurement') return '/usluge';
   return '/kontakt';

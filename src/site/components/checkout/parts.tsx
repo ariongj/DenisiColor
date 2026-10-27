@@ -64,7 +64,8 @@ export function CheckoutSteps({ current, className }: { current: 0 | 1 | 2 | 3 |
               {done ? <Check className="h-3.5 w-3.5" strokeWidth={3} /> : i + 1}
             </span>
           );
-          const text = <span className={cn('text-[12px] font-semibold sm:text-[13px]', active ? 'text-ink' : done ? 'text-ink-soft' : 'text-muted')}>{label}</span>;
+          // narrow phones: only the active step keeps its label (four Albanian labels overflow 390px)
+          const text = <span className={cn('text-[12px] font-semibold sm:text-[13px]', active ? 'text-ink' : done ? 'text-ink-soft max-[419px]:sr-only' : 'text-muted max-[419px]:sr-only')}>{label}</span>;
           return (
             <Fragment key={label}>
               {i > 0 && <li aria-hidden className={cn('h-px w-3 shrink sm:w-8', i <= current ? 'bg-ink/50' : 'bg-ink/15')} />}

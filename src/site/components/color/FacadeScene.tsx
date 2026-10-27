@@ -45,7 +45,7 @@ const RIDGE: [Pt, Pt] = [
   [521, 102],
   [749, 102],
 ];
-const EAVE_BACK = sp(1 + 12 / DEPTH, EY).map((v, i) => (i === 0 ? v + (ER - FR) : v)) as Pt;
+const EAVE_BACK = sp(1.07, EY).map((v, i) => (i === 0 ? v + 18 : v)) as Pt;
 
 /* ---- surfaces ---- */
 const surround = ([x, y, w, h]: number[], sill = true) => [
@@ -154,6 +154,10 @@ export function FacadeScene(props: SceneProps) {
           <stop offset="0" stopColor="#7d9a5c" />
           <stop offset="1" stopColor="#3f5a33" />
         </linearGradient>
+        <linearGradient id={id('leafLight')} x1="0" y1="0" x2="0.6" y2="1">
+          <stop offset="0" stopColor="#9bb877" />
+          <stop offset="1" stopColor="#5e7c45" />
+        </linearGradient>
         <linearGradient id={id('leafDark')} x1="0" y1="0" x2="0.4" y2="1">
           <stop offset="0" stopColor="#5d7a48" />
           <stop offset="1" stopColor="#2c4227" />
@@ -237,7 +241,7 @@ export function FacadeScene(props: SceneProps) {
 
       {/* ---------- light & shadow on the front plane ---------- */}
       <g clipPath={`url(#${id('front')})`} pointerEvents="none">
-        <rect x={FL - 4} y={WT} width={FR - FL + 4} height={G - WT} fill={`url(#${id('grain')})`} style={{ mixBlendMode: 'soft-light' }} opacity="0.55" />
+        <rect x={FL - 4} y={WT} width={FR - FL + 4} height={G - WT} fill={`url(#${id('grain')})`} style={{ mixBlendMode: 'soft-light' }} opacity="0.32" />
         <rect x={FL - 4} y={WT} width={FR - FL + 4} height={G - WT} fill={`url(#${id('sun')})`} />
         <rect x={FL - 4} y={WT} width={FR - FL + 4} height="70" fill={`url(#${id('soffit')})`} />
         <rect x={FL - 4} y={G - 26} width={FR - FL + 4} height="26" fill={`url(#${id('contact')})`} />
@@ -254,8 +258,8 @@ export function FacadeScene(props: SceneProps) {
 
       {/* ---------- side wall: cool shade ---------- */}
       <g clipPath={`url(#${id('side')})`} pointerEvents="none">
-        <path d={sideQuad(0, 1, WT, G)} fill="#7f8ca3" style={{ mixBlendMode: 'multiply' }} opacity="0.62" />
-        <path d={sideQuad(0, 1, WT, G)} fill={`url(#${id('grain')})`} style={{ mixBlendMode: 'soft-light' }} opacity="0.5" />
+        <path d={sideQuad(0, 1, WT, G)} fill="#98a0ae" style={{ mixBlendMode: 'multiply' }} opacity="0.72" />
+        <path d={sideQuad(0, 1, WT, G)} fill={`url(#${id('grain')})`} style={{ mixBlendMode: 'soft-light' }} opacity="0.3" />
         <path d={sideQuad(0, 1, WT, WT + 60)} fill={`url(#${id('soffit')})`} />
         <path d={sideQuad(0, 1, G - 26, G)} fill={`url(#${id('contact')})`} />
         <path d={sideQuad(0, 0.02, WT, G)} fill="#000" opacity="0.08" />
@@ -344,13 +348,21 @@ export function FacadeScene(props: SceneProps) {
         <path d="M140 640 C 146 590 150 540 146 470 L 158 470 C 156 540 160 590 168 640 Z" fill="#5c4634" />
         <path d="M152 520 L 120 470 M154 500 L 190 455" stroke="#5c4634" strokeWidth="6" strokeLinecap="round" />
         <g>
-          <circle cx="152" cy="420" r="78" fill={`url(#${id('leafDark')})`} />
-          <circle cx="100" cy="460" r="52" fill={`url(#${id('leafDark')})`} />
-          <circle cx="205" cy="452" r="56" fill={`url(#${id('leaf')})`} />
-          <circle cx="132" cy="372" r="54" fill={`url(#${id('leaf')})`} />
-          <circle cx="190" cy="392" r="48" fill={`url(#${id('leaf')})`} />
-          <circle cx="118" cy="368" r="22" fill="#9ab676" opacity="0.6" />
-          <circle cx="176" cy="372" r="16" fill="#9ab676" opacity="0.5" />
+          {[
+            [150, 430, 74, 'leafDark'],
+            [96, 468, 48, 'leafDark'],
+            [210, 470, 50, 'leafDark'],
+            [118, 400, 56, 'leaf'],
+            [192, 410, 54, 'leaf'],
+            [150, 360, 52, 'leaf'],
+            [104, 448, 36, 'leaf'],
+            [214, 440, 34, 'leaf'],
+            [176, 345, 32, 'leafLight'],
+            [128, 352, 30, 'leafLight'],
+            [160, 470, 40, 'leafDark'],
+          ].map(([cx, cy, r, g], i) => (
+            <circle key={i} cx={cx} cy={cy} r={r} fill={`url(#${id(g as string)})`} />
+          ))}
         </g>
         {/* thuja on the right */}
         <path d="M1062 650 C 1030 600 1036 470 1070 382 C 1102 470 1110 600 1078 650 Z" fill={`url(#${id('leafDark')})`} />
@@ -370,7 +382,7 @@ export function FacadeScene(props: SceneProps) {
         ].map(([cx, cy, r], i) => (
           <g key={i}>
             <circle cx={cx} cy={cy} r={r} fill={`url(#${id(i % 2 ? 'leaf' : 'leafDark')})`} />
-            <circle cx={cx - r * 0.35} cy={cy - r * 0.4} r={r * 0.35} fill="#a3bd7f" opacity="0.45" />
+            <circle cx={cx - r * 0.3} cy={cy - r * 0.35} r={r * 0.5} fill="#a3bd7f" opacity="0.18" />
           </g>
         ))}
         {/* box balls by the steps */}

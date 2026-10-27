@@ -46,14 +46,16 @@ export function Recommendation({ plans, labels }: { plans: RoomPlan[]; labels: R
                   <Icon className="h-[18px] w-[18px]" />
                 </span>
                 <div className="min-w-0">
-                  <div className="truncate text-[14px] font-bold text-ink">{labels[room.id]}</div>
-                  <div className="text-[12px] text-muted">
-                    {n(room.area)} m²{!p.outdoor && ` · ${n(room.height, 1)} m`}
+                  <div className="flex items-center gap-2">
+                    <span className="truncate text-[14px] font-bold text-ink">{labels[room.id]}</span>
                     {pl.mult > 1 && (
-                      <Badge tone="brand" className="ml-2 px-2! py-0.5!">
+                      <Badge tone="brand" className="shrink-0 px-2! py-0.5!">
                         × {pl.mult}
                       </Badge>
                     )}
+                  </div>
+                  <div className="text-[12px] text-muted">
+                    {n(room.area)} m²{!p.outdoor && ` · ${n(room.height, 1)} m`}
                   </div>
                 </div>
               </div>

@@ -390,7 +390,7 @@ function Success({ order }: { order: Order }) {
                   <>
                     <br />
                     {c.company}
-                    {c.pib ? ` · PIB ${c.pib}` : ''}
+                    {c.pib ? ` · NUI ${c.pib}` : ''}
                   </>
                 )}
               </p>

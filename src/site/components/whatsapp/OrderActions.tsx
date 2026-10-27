@@ -87,7 +87,7 @@ export function CheckoutWhatsApp({ totals, customer, variant, className }: { tot
             {filled ? t('ckFilled') : t('ckEmpty')} {t('ckNote')}
           </p>
         </div>
-        <WaAnchor href={href} size="sm" className="self-start sm:self-center">
+        <WaAnchor href={href} size="sm" variant="outline" className="self-start sm:self-center">
           {t('ckBtn')}
         </WaAnchor>
       </div>

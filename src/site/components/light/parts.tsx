@@ -48,7 +48,7 @@ export const mountOf = (productId: string): 'ceiling' | 'wall' | 'pole' =>
 /** Small segmented control (pills). */
 export function Seg<T extends string | number>({ value, onChange, options, className }: { value: T; onChange: (v: T) => void; options: { id: T; label: ReactNode; title?: string }[]; className?: string }) {
   return (
-    <div className={cn('inline-flex flex-wrap gap-1 rounded-full bg-paper p-1 ring-1 ring-line', className)} role="radiogroup">
+    <div className={cn('inline-flex flex-wrap gap-1 rounded-[20px] bg-paper p-1 ring-1 ring-line', className)} role="radiogroup">
       {options.map((o) => (
         <button
           key={String(o.id)}
