@@ -200,12 +200,12 @@ export function buildHome(_now = new Date()): HomeSection[] {
         eyebrow: T('Boje, lakovi i fasade', 'Ngjyra, llaqe & fasada', 'Paints, varnishes & facades'),
         title: T('Boje za *dom i fasadu*', 'Ngjyra për *shtëpinë dhe fasadën*', 'Paint for *home and facade*'),
         text: T(
-          'Pored alata i rasvete, radimo i sa bojama, lakovima i materijalom za fasade. Recite nam površinu i nijansu — poslaćemo vam ponudu.',
-          'Përveç veglave dhe ndriçimit, punojmë edhe me ngjyra, llaqe dhe materiale për fasada. Na tregoni sipërfaqen dhe nuancën — ju dërgojmë ofertë.',
-          'Alongside tools and lighting we also supply paints, varnishes and facade materials. Tell us the area and the shade — we’ll send you a quote.',
+          'Pored alata i rasvete, radimo i sa bojama, lakovima i materijalom za fasade. Obojte fasadu ili sobu online, izaberite nijanse i pošaljite nam ih — poslaćemo vam ponudu.',
+          'Përveç veglave dhe ndriçimit, punojmë edhe me ngjyra, llaqe dhe materiale për fasada. Lyeni fasadën ose dhomën online, zgjidhni nuancat dhe na i dërgoni — ju kthejmë ofertë.',
+          'Alongside tools and lighting we also supply paints, varnishes and facade materials. Paint a facade or a room online, pick your shades and send them to us — we’ll reply with a quote.',
         ),
         image: '/images/misc/ngjyra.webp',
-        cta: { label: T('Zatražite ponudu', 'Kërkoni ofertë', 'Request a quote'), href: '/faqe/ngjyra-fasada' },
+        cta: { label: T('Probajte boju online', 'Provo ngjyrën online', 'Try colours online'), href: '/ngjyra' },
         // No campaign behind this block: no end date, no code.
         endsAt: '',
         code: '',
