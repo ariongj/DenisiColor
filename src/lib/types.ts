@@ -262,6 +262,27 @@ export interface Inquiry {
   company?: string;
   /** Follow-up deadline (Afat ndjekjeje) */
   followUpAt?: string;
+  /** Items from the storefront quote list ("Lista e ofertës") — one enquiry, several products */
+  lines?: InquiryLine[];
+  /** Colours picked in the colour studio (hex + label), for paint/facade enquiries */
+  colors?: { hex: string; name: string; surface?: string }[];
+}
+
+export interface InquiryLine {
+  productId: string;
+  qty: number;
+  /** Human readable option summary, e.g. "Ngjyra: E bardhë" */
+  options?: string;
+  note?: string;
+}
+
+/** A line in the shopper's quote list (request-a-price products, or priced ones in bulk). */
+export interface QuoteListItem {
+  key: string;
+  productId: string;
+  qty: number;
+  options: Record<string, string>;
+  note?: string;
 }
 
 export interface Coupon {

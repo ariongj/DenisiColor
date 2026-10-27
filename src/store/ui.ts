@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import type { CartItem, Lang, RoleId } from '@/lib/types';
+import type { CartItem, Lang, QuoteListItem, RoleId } from '@/lib/types';
 import { safeStorage } from './storage';
 
 export function cartKey(productId: string, options: Record<string, string>, installation: boolean) {
@@ -29,6 +29,9 @@ interface UiState {
   adminRole: RoleId;
   cartOpen: boolean;
   searchOpen: boolean;
+  /** Request-a-price list ("Lista e ofertës") — sent as ONE enquiry */
+  quoteList: QuoteListItem[];
+  quoteOpen: boolean;
 
   setLang: (lang: Lang) => void;
   setAdminLang: (lang: Lang) => void;
@@ -49,6 +52,12 @@ interface UiState {
   login: () => void;
   logout: () => void;
   setAdminRole: (role: RoleId) => void;
+  addToQuote: (item: Omit<QuoteListItem, 'key'>) => void;
+  setQuoteQty: (key: string, qty: number) => void;
+  setQuoteNote: (key: string, note: string) => void;
+  removeFromQuote: (key: string) => void;
+  clearQuote: () => void;
+  setQuoteOpen: (open: boolean) => void;
 }
 
 const withCodes = (codes: string[]) => ({ codes, coupon: codes[0] ?? null });
@@ -69,6 +78,8 @@ export const useUi = create<UiState>()(
       adminRole: 'owner',
       cartOpen: false,
       searchOpen: false,
+      quoteList: [],
+      quoteOpen: false,
 
       setLang: (lang) => set({ lang }),
       setAdminLang: (adminLang) => set({ adminLang }),
@@ -123,6 +134,21 @@ export const useUi = create<UiState>()(
       login: () => set({ adminAuthed: true }),
       logout: () => set({ adminAuthed: false }),
       setAdminRole: (adminRole) => set({ adminRole }),
+      addToQuote: (item) =>
+        set((s) => {
+          const key = cartKey(item.productId, item.options, false);
+          const existing = s.quoteList.find((q) => q.key === key);
+          if (existing) return { quoteList: s.quoteList.map((q) => (q.key === key ? { ...q, qty: q.qty + item.qty } : q)) };
+          return { quoteList: [...s.quoteList, { ...item, key }] };
+        }),
+      setQuoteQty: (key, qty) =>
+        set((s) => ({
+          quoteList: qty <= 0 ? s.quoteList.filter((q) => q.key !== key) : s.quoteList.map((q) => (q.key === key ? { ...q, qty } : q)),
+        })),
+      setQuoteNote: (key, note) => set((s) => ({ quoteList: s.quoteList.map((q) => (q.key === key ? { ...q, note } : q)) })),
+      removeFromQuote: (key) => set((s) => ({ quoteList: s.quoteList.filter((q) => q.key !== key) })),
+      clearQuote: () => set({ quoteList: [] }),
+      setQuoteOpen: (quoteOpen) => set({ quoteOpen }),
     }),
     {
       name: 'denisi-ui',
@@ -138,6 +164,7 @@ export const useUi = create<UiState>()(
         recentlyViewed: s.recentlyViewed,
         adminAuthed: s.adminAuthed,
         adminRole: s.adminRole,
+        quoteList: s.quoteList,
       }),
       // v1 → v2: keep the shopper's cart, wishlist, history, language and login; the CMS now opens in
       // Albanian (sq) as owner; the single coupon becomes the first entry of `codes`.

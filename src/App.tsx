@@ -29,6 +29,9 @@ import Wishlist from '@/site/pages/Wishlist';
 import CollectionPage from '@/site/pages/CollectionPage';
 import OfferPage from '@/site/pages/OfferPage';
 import NotFound from '@/site/pages/NotFound';
+import QuoteListPage from '@/site/pages/QuoteListPage';
+import ColorStudio from '@/site/pages/ColorStudio';
+import LightPlanner from '@/site/pages/LightPlanner';
 
 // CMS (lazy — separate bundle)
 const AdminLayout = lazy(() => import('@/admin/layout/AdminLayout'));
@@ -235,6 +238,9 @@ const router = createBrowserRouter([
           { path: 'faqe/:slug', element: <CmsPageView /> }, // Albanian alias, e.g. /faqe/ngjyra-fasada
           { path: 'pretraga', element: <SearchPage /> },
           { path: 'lista-zelja', element: <Wishlist /> },
+          { path: 'lista-ofertes', element: <QuoteListPage /> },
+          { path: 'ngjyra', element: <ColorStudio /> },
+          { path: 'ndricimi', element: <LightPlanner /> },
           { path: '*', element: <NotFound /> },
         ],
       },
