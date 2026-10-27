@@ -1,7 +1,7 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
-import { ArrowUpRight, CheckCircle2, FileText, Lock, PackagePlus, Plus, RotateCcw, Send, ShoppingBag, Trash2, X, XCircle } from 'lucide-react';
+import { AlertTriangle, ArrowUpRight, CheckCircle2, ClipboardList, FileText, Lock, PackagePlus, Plus, RotateCcw, Send, ShoppingBag, Trash2, X, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/misc';
 import { Card, PageHeader, SaveBar, Thumb, confirmDialog } from '@/admin/components/kit';
@@ -11,7 +11,8 @@ import { defineDict, lt, useDict, useL, useLang } from '@/i18n';
 import { useDb } from '@/store/db';
 import { useCan, useCurrentStaff, useSettings } from '@/store/hooks';
 import { basePrice } from '@/lib/pricing';
-import { date, dateTime, money, unitLabel } from '@/lib/format';
+import { date, dateTime, money, num, unitLabel } from '@/lib/format';
+import { quoteRef } from '@/site/components/quote';
 import type { L10n, Quote } from '@/lib/types';
 import { cn, round2, uid } from '@/lib/utils';
 import { cx } from './i18n';
@@ -99,6 +100,13 @@ const T = defineDict({
     notFoundText: 'Možda je obrisana. Vratite se na listu B2B ponuda.',
     back: 'Nazad na ponude',
     remove: 'Ukloni stavku',
+    missingPrices: '{n} stavki bez cene — unesite cene pre slanja.',
+    missingOne: '1 stavka bez cene — unesite cenu pre slanja.',
+    noPrice: 'Unesite cenu',
+    request: 'Zahtev klijenta',
+    requestHint: 'Sa liste za ponudu na sajtu ({ref}).',
+    neededBy: 'Potrebno do',
+    note: 'Napomena',
   },
   sq: {
     newTitle: 'Ofertë e re B2B',
@@ -178,6 +186,13 @@ const T = defineDict({
     notFoundText: 'Mund të jetë fshirë. Kthehuni te lista e ofertave B2B.',
     back: 'Kthehu te ofertat',
     remove: 'Hiq linjën',
+    missingPrices: '{n} linja pa çmim — plotësoni çmimet para dërgimit.',
+    missingOne: '1 linjë pa çmim — plotësoni çmimin para dërgimit.',
+    noPrice: 'Plotësoni çmimin',
+    request: 'Kërkesa e klientit',
+    requestHint: 'Nga lista e ofertës në faqe ({ref}).',
+    neededBy: 'Duhet deri më',
+    note: 'Shënim',
   },
   en: {
     newTitle: 'New B2B quote',
@@ -257,6 +272,13 @@ const T = defineDict({
     notFoundText: 'It may have been deleted. Go back to the B2B quotes list.',
     back: 'Back to quotes',
     remove: 'Remove line',
+    missingPrices: '{n} lines without a price — fill them in before sending.',
+    missingOne: '1 line without a price — fill it in before sending.',
+    noPrice: 'Enter a price',
+    request: 'Customer request',
+    requestHint: 'From the website quote list ({ref}).',
+    neededBy: 'Needed by',
+    note: 'Note',
   },
 });
 
@@ -297,13 +319,19 @@ export function QuoteEditor({ id, inquiryId }: { id: string; inquiryId?: string 
 
   const buildBlank = (): Quote => {
     const prod = inquiry?.productId ? productById.get(inquiry.productId) : undefined;
+    // Quote-list request → one line per requested product (options in the title). Request-a-price products
+    // start at 0 for staff to price; catalogue products start at their public price.
+    const fromList: Line[] = (inquiry?.lines ?? []).map((x) => {
+      const p = productById.get(x.productId);
+      return { ...(p ? { productId: p.id } : {}), title: [p ? lt(p.name, lang) : x.productId, x.options].filter(Boolean).join(' — '), qty: x.qty, price: p ? basePrice(p) : 0 };
+    });
     const lastTerms = [...quotes].sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0]?.terms;
     return {
       id: '',
       number: nextQuoteNumber(quotes),
       ...(inquiry ? { inquiryId: inquiry.id } : {}),
       customer: { name: inquiry?.name ?? '', company: inquiry?.company ?? '', email: inquiry?.email ?? '', phone: inquiry?.phone ?? '' },
-      lines: prod ? [{ productId: prod.id, title: lt(prod.name, lang), qty: 1, price: basePrice(prod) }] : [],
+      lines: fromList.length ? fromList : prod ? [{ productId: prod.id, title: lt(prod.name, lang), qty: 1, price: basePrice(prod) }] : [],
       validUntil: isoDayFromNow(14),
       terms: lastTerms ?? DEFAULT_TERMS,
       version: 1,
@@ -341,6 +369,9 @@ export function QuoteEditor({ id, inquiryId }: { id: string; inquiryId?: string 
   const totals = quoteTotals(draft.lines, settings.vatRate);
   const left = daysLeft(draft.validUntil, now);
   const linkedDraft = saved?.orderId ? drafts.find((d) => d.id === saved.orderId) : undefined;
+  /** Lines still waiting for a price (highlighted; sending is held back until they are filled). */
+  const unpriced = draft.lines.filter((x) => x.title.trim() && x.qty > 0 && !(x.price > 0)).length;
+  const missingText = unpriced ? (unpriced === 1 ? t('missingOne') : t('missingPrices', { n: unpriced })) : undefined;
 
   const db = () => useDb.getState();
   const patch = (p: Partial<Quote>) => setDraft((d) => ({ ...d, ...p }));
@@ -469,7 +500,7 @@ export function QuoteEditor({ id, inquiryId }: { id: string; inquiryId?: string 
           <ActionBtn {...gate(canEdit)} icon={<XCircle className="h-4 w-4" />} onClick={decline}>
             {t('decline')}
           </ActionBtn>
-          <ActionBtn {...gate(canSend)} icon={<Send className="h-4 w-4" />} onClick={send}>
+          <ActionBtn {...gate(canSend, missingText)} icon={<Send className="h-4 w-4" />} onClick={send}>
             {t('resend')}
           </ActionBtn>
           <ActionBtn primary {...gate(canEdit)} icon={<CheckCircle2 className="h-4 w-4" />} onClick={accept}>
@@ -478,7 +509,7 @@ export function QuoteEditor({ id, inquiryId }: { id: string; inquiryId?: string 
         </>
       )}
       {state === 'draft' && (
-        <ActionBtn primary {...gate(canSend)} icon={<Send className="h-4 w-4" />} onClick={send}>
+        <ActionBtn primary {...gate(canSend, missingText)} icon={<Send className="h-4 w-4" />} onClick={send}>
           {t('send')}
         </ActionBtn>
       )}
@@ -598,7 +629,7 @@ export function QuoteEditor({ id, inquiryId }: { id: string; inquiryId?: string 
                         </button>
                         <div className="order-3 col-span-2 grid grid-cols-3 gap-2 md:order-none md:col-span-3 md:col-start-2 md:row-start-1 md:grid-cols-[92px_120px_110px] md:gap-3">
                           <NumField label={t('col_qty')} value={line.qty} onChange={(v) => setLine(i, { qty: v })} locked={locked} step="1" suffix={p ? unitLabel(p.unit, lang) : undefined} />
-                          <NumField label={t('col_price')} value={line.price} onChange={(v) => setLine(i, { price: v })} locked={locked} step="0.01" suffix="€" />
+                          <NumField label={t('col_price')} value={line.price} onChange={(v) => setLine(i, { price: v })} locked={locked} step="0.01" suffix="€" warn={!locked && !!line.title.trim() && line.qty > 0 && !(line.price > 0)} warnText={t('noPrice')} />
                           <div className="flex flex-col items-end justify-center">
                             <span className="text-[11px] text-muted md:hidden">{t('col_total')}</span>
                             <span className="text-[13.5px] font-semibold tabular-nums text-ink">{money(round2(line.qty * line.price), lang)}</span>
@@ -609,6 +640,11 @@ export function QuoteEditor({ id, inquiryId }: { id: string; inquiryId?: string 
                   })}
                 </ul>
                 {errors.lines && <p className="px-5 pb-1 pt-2 text-[12.5px] font-semibold text-red-700">{errors.lines}</p>}
+                {missingText && !locked && (
+                  <p className="mx-4 mb-3 mt-1 flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-2 text-[12.5px] font-semibold text-amber-900 ring-1 ring-inset ring-amber-600/20 sm:mx-5">
+                    <AlertTriangle className="h-3.5 w-3.5 shrink-0" /> {missingText}
+                  </p>
+                )}
               </>
             )}
             <dl className="space-y-1 border-t border-line bg-canvas/30 px-5 py-3.5 text-[13px]">
@@ -652,6 +688,41 @@ export function QuoteEditor({ id, inquiryId }: { id: string; inquiryId?: string 
               )}
             </div>
           </Card>
+
+          {/* What the customer asked for (quote-list requests) */}
+          {inquiry?.lines?.length ? (
+            <Card title={t('request')} description={t('requestHint', { ref: quoteRef(inquiry.id) })}>
+              <ul className="space-y-2.5">
+                {inquiry.lines.map((x, i) => {
+                  const p = productById.get(x.productId);
+                  return (
+                    <li key={i} className="flex gap-2.5 text-[13px]">
+                      <ClipboardList className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted" />
+                      <span className="min-w-0 flex-1">
+                        <span className="flex items-baseline justify-between gap-2">
+                          <span className="truncate font-semibold text-ink">{p ? l(p.name) : x.productId}</span>
+                          <span className="shrink-0 font-semibold tabular-nums text-ink">
+                            {num(x.qty, lang)} {unitLabel(p?.unit ?? 'kom', lang)}
+                          </span>
+                        </span>
+                        {x.options && <span className="block truncate text-[12px] text-muted">{x.options}</span>}
+                        {x.note && (
+                          <span className="block text-[12px] text-amber-900">
+                            {t('note')}: {x.note}
+                          </span>
+                        )}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+              {inquiry.preferredDate && (
+                <p className="mt-3 border-t border-line pt-2.5 text-[12.5px] text-muted">
+                  {t('neededBy')}: <span className="font-semibold text-ink">{date(inquiry.preferredDate, lang)}</span>
+                </p>
+              )}
+            </Card>
+          ) : null}
 
           {/* Validity, version, owner */}
           <Card title={t('validity')}>
@@ -747,7 +818,7 @@ function ActionBtn({ primary, disabled, title, icon, onClick, children }: { prim
   );
 }
 
-function NumField({ label, value, onChange, locked, step, suffix }: { label: string; value: number; onChange: (v: number) => void; locked: boolean; step: string; suffix?: string }) {
+function NumField({ label, value, onChange, locked, step, suffix, warn, warnText }: { label: string; value: number; onChange: (v: number) => void; locked: boolean; step: string; suffix?: string; warn?: boolean; warnText?: string }) {
   return (
     <label className="flex min-w-0 flex-col items-end">
       <span className="text-[11px] text-muted md:hidden">{label}</span>
@@ -765,7 +836,13 @@ function NumField({ label, value, onChange, locked, step, suffix }: { label: str
             value={Number.isFinite(value) ? value : 0}
             onChange={(e) => onChange(e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)))}
             aria-label={label}
-            className={cn('h-8 w-full rounded-md border border-line bg-white pl-2 text-right text-[13.5px] tabular-nums text-ink outline-none transition-colors focus:border-ink/40 focus:ring-4 focus:ring-ink/5', suffix ? 'pr-8' : 'pr-2')}
+            aria-invalid={warn || undefined}
+            title={warn ? warnText : undefined}
+            className={cn(
+              'h-8 w-full rounded-md border pl-2 text-right text-[13.5px] tabular-nums text-ink outline-none transition-colors focus:border-ink/40 focus:ring-4 focus:ring-ink/5',
+              warn ? 'border-amber-500 bg-amber-50 ring-2 ring-amber-400/25' : 'border-line bg-white',
+              suffix ? 'pr-8' : 'pr-2',
+            )}
           />
           {suffix && <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[11.5px] text-muted">{suffix}</span>}
         </span>

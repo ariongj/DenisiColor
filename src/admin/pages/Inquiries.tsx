@@ -9,6 +9,7 @@ import { PageHeader, SearchInput, Table, Td, Th, Tr } from '@/admin/components/k
 import { adm } from '@/admin/i18n';
 import { Agenda, type AgendaFilter } from '@/admin/components/crm/Agenda';
 import { InquiryCard } from '@/admin/components/crm/InquiryCard';
+import { LinesBadge } from '@/admin/components/crm/InquiryLines';
 import { InquiryDrawer } from '@/admin/components/crm/InquiryDrawer';
 import { matches, useNow } from '@/admin/components/crm/shared';
 import { cx } from '@/admin/components/contacts/i18n';
@@ -207,9 +208,13 @@ export default function Inquiries() {
         if (agenda === 'new' && x.status !== 'new') return false;
         if (agenda === 'unassigned' && (x.status === 'done' || x.assignee)) return false;
         if (agenda === 'overdue' && (!due || new Date(due.at).getTime() >= now)) return false;
-        return matches(q, [x.name, x.company, x.phone, x.email, x.city, x.service, x.message, ...(x.tags ?? []), product && l(product.name)]);
+        const lineNames = (x.lines ?? []).map((li) => {
+          const lp = productById.get(li.productId);
+          return lp && l(lp.name);
+        });
+        return matches(q, [x.name, x.company, x.phone, x.email, x.city, x.service, x.message, ...(x.tags ?? []), product && l(product.name), ...lineNames]);
       }),
-    [rows, who, me?.id, source, kind, agenda, now, q, l],
+    [rows, who, me?.id, source, kind, agenda, now, q, l, productById],
   );
   const counts = useMemo(() => {
     const c = { all: base.length, new: 0, open: 0, closed: 0 };
@@ -458,9 +463,12 @@ export default function Inquiries() {
                             </span>
                           )}
                         </div>
-                        <div className="mt-0.5 truncate text-[12.5px] text-muted">
-                          <span className="xl:hidden">{tx(`kind_${r.kind}`)} · </span>
-                          {x.message}
+                        <div className="mt-0.5 flex min-w-0 items-center gap-2 text-[12.5px] text-muted">
+                          <LinesBadge inquiry={x} className="shrink-0" />
+                          <span className="truncate">
+                            <span className="xl:hidden">{tx(`kind_${r.kind}`)} · </span>
+                            {x.message}
+                          </span>
                         </div>
                       </Td>
                       <Td className="max-xl:hidden">

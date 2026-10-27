@@ -79,7 +79,8 @@ export function ListPanel({
       })
       .filter(Boolean)
       .join('; ');
-    return `${t('noteHead')}: ${parts}${line.unit === 'm' ? ` — ${t('metresNote', { m: n(line.qty) })}` : ''}`;
+    // Strip / profile are sold per piece in the store but planned in metres → say so first
+    return `${line.unit === 'm' ? `${t('metresNote', { m: n(line.qty) })} · ` : ''}${t('noteHead')}: ${parts}`;
   };
 
   const addAll = () => {

@@ -284,11 +284,11 @@ export default function LightPlanner() {
 
       {/* Mobile: quick jump to the list */}
       {rooms.length > 0 && (
-        <div className="fixed inset-x-0 bottom-3 z-30 flex justify-end pl-16 pr-3 lg:hidden">
+        <div className="pointer-events-none fixed inset-x-0 bottom-[84px] z-30 flex justify-end px-4 lg:hidden">
           <button
             type="button"
             onClick={() => scrollToId('lista')}
-            className="flex w-full max-w-sm items-center gap-3 rounded-full bg-brand-900 py-2 pl-4 pr-2 text-left text-white shadow-[0_18px_40px_-14px_rgb(5_14_28/0.7)] ring-1 ring-white/10"
+            className="pointer-events-auto flex max-w-full items-center gap-3 rounded-full bg-brand-900 py-1.5 pl-4 pr-1.5 text-left text-white shadow-[0_18px_40px_-14px_rgb(5_14_28/0.7)] ring-1 ring-white/10"
           >
             <span className="min-w-0 flex-1 truncate text-[13px] font-semibold">
               {num(fixtures, lang)} {t('totFixtures')}

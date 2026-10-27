@@ -23,6 +23,16 @@ import { CustomerLink } from '@/admin/components/contacts/CustomerLink';
 import { BookingModal } from '@/admin/components/contacts/BookingModal';
 import { STATUSES, assignableStaff, bookingsFor, dueOf, kindOf, quoteState, sourceKey, sourceOf, sourcePath, type CustomerIndex, type InquiryX } from '@/admin/components/contacts/model';
 import { fromLocalInput, mailHref, parseDay, telHref, toLocalInput, useNow, waHref } from './shared';
+import { InquiryColorsBlock, InquiryLinesBlock } from './InquiryLines';
+import { QL } from '@/site/components/quotelist/dict';
+
+/** The customer's own words of a quote-list request — the generated product summary is shown as a table instead. */
+const ownMessage = (q: InquiryX) => {
+  if (!q.lines?.length) return q.message;
+  const markers = [QL.sq.m_request, QL.en.m_request, QL.me.m_request];
+  const cut = Math.min(...markers.map((m) => q.message.indexOf(`${m}:`)).filter((i) => i >= 0), q.message.length);
+  return q.message.slice(0, cut).trim();
+};
 
 const T = defineDict({
   me: {
@@ -307,6 +317,8 @@ function Body({ inquiry: q, product, index, duplicateOf, onClose, onOpenInquiry 
   const due = dueOf(q);
   const tagPool = useMemo(() => [...new Set(inquiries.flatMap((x) => x.tags ?? []))].sort(), [inquiries]);
   const [booking, setBooking] = useState(false);
+  const navigate = useNavigate();
+  const message = ownMessage(q);
 
   const db = () => useDb.getState();
   const setStatus = (status: InquiryStatus, msg?: string, extraTags?: string[]) => {
@@ -414,9 +426,9 @@ function Body({ inquiry: q, product, index, duplicateOf, onClose, onOpenInquiry 
       <section>
         <SectionTitle>{t('message')}</SectionTitle>
         <div className="overflow-hidden rounded-xl border border-line bg-white">
-          <p className="whitespace-pre-line px-4 py-3.5 text-[14px] leading-relaxed text-ink">{q.message}</p>
+          {message && <p className="whitespace-pre-line px-4 py-3.5 text-[14px] leading-relaxed text-ink">{message}</p>}
           {(product || q.service || q.preferredDate || q.city) && (
-            <div className="divide-y divide-line/70 border-t border-line/70 bg-canvas/30">
+            <div className={cn('divide-y divide-line/70 bg-canvas/30', message && 'border-t border-line/70')}>
               {product && (
                 <a href={href(`/proizvod/${product.slug}`)} target="_blank" rel="noreferrer" className="group flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-canvas">
                   <Thumb src={product.images[0]} className="h-10 w-10 rounded-md" />
@@ -436,6 +448,13 @@ function Body({ inquiry: q, product, index, duplicateOf, onClose, onOpenInquiry 
           )}
         </div>
       </section>
+
+      {/* Quote list lines (storefront "Lista e ofertës") and colour-studio picks */}
+      <InquiryLinesBlock
+        inquiry={q}
+        action={quotes.length === 0 ? { onClick: () => navigate(`/admin/kontakti/ponude?id=new&inquiry=${q.id}`), disabled: !can('quotes', 'edit'), title: can('quotes', 'edit') ? undefined : noPerm } : null}
+      />
+      <InquiryColorsBlock inquiry={q} />
 
       {/* Handling: status, assignee, follow-up, tags */}
       <section>

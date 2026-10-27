@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { cx } from '@/admin/components/contacts/i18n';
 import { AssigneeLabel, DueLabel, KindLabel, StatusLabel, TickBox } from '@/admin/components/contacts/atoms';
 import type { ContactKind, Due, InquiryX } from '@/admin/components/contacts/model';
+import { LinesBadge } from './InquiryLines';
 
 /**
  * One contact request as a compact list row — the phone layout of the inbox table
@@ -63,6 +64,7 @@ export function InquiryCard({
             {timeAgo(q.createdAt, lang)}
           </span>
         </div>
+        {q.lines?.length || q.colors?.length ? <LinesBadge inquiry={q} className="mt-1.5 max-w-full" /> : null}
         <p className="mt-1 line-clamp-2 text-[13px] leading-snug text-ink-soft">{q.message}</p>
         <div className="mt-2.5 flex flex-wrap items-center gap-x-3.5 gap-y-1.5">
           <StatusLabel status={q.status} className="text-[12.5px]" />
