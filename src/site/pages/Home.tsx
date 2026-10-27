@@ -4,6 +4,7 @@ import type { HomeSection } from '@/lib/types';
 import { useDb } from '@/store/db';
 import { usePageTitle } from '@/site/layout/SiteLayout';
 import { HeroSection } from '@/site/sections/Hero';
+import { ToolsShowcase } from '@/site/sections/ToolsShowcase';
 import {
   BlogSection, CategoriesSection, CtaSection, FaqSection, FeaturedSection, InstagramSection, ProcessSection,
   ProjectsSection, PromoSection, ServicesSection, StatsSection, TrustSection,
@@ -71,6 +72,8 @@ export default function Home() {
       {enabled.map((s, i) => (
         <div key={s.id} data-section={s.id} className="scroll-mt-24">
           {renderSection(s, enabled[i - 1])}
+          {/* The online tools sit right after the category grid */}
+          {s.type === 'categories' && <ToolsShowcase />}
         </div>
       ))}
     </>

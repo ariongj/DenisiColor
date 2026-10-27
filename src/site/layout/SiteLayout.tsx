@@ -12,14 +12,18 @@ import { useSettings } from '@/store/hooks';
 import { useDb } from '@/store/db';
 import { useUi } from '@/store/ui';
 
+/** Tool pages keep their phone screens free of floating chrome (colour strip, sticky plan bar). */
+const TOOL_PAGE = /^\/(ngjyra|ndricimi|lista-ofertes)/;
+
 function DemoBadge() {
   const t = useDict(site);
   const settings = useSettings();
+  const { pathname } = useLocation();
   if (!settings.demoBanner) return null;
   return (
     <Link
       to="/admin"
-      className="group fixed bottom-4 left-4 z-30 flex items-center gap-2.5 rounded-full bg-ink/90 py-1.5 pl-1.5 pr-4 text-[12px] font-semibold text-paper shadow-xl ring-1 ring-white/10 backdrop-blur transition-all hover:bg-ink"
+      className={`group fixed bottom-4 left-4 z-30 ${TOOL_PAGE.test(pathname) ? 'max-lg:hidden ' : ''} flex items-center gap-2.5 rounded-full bg-ink/90 py-1.5 pl-1.5 pr-4 text-[12px] font-semibold text-paper shadow-xl ring-1 ring-white/10 backdrop-blur transition-all hover:bg-ink`}
     >
       <span className="grid h-7 w-7 place-items-center rounded-full bg-brand-600">
         <LayoutDashboard className="h-3.5 w-3.5" />

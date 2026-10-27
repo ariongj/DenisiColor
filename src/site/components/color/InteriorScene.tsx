@@ -89,7 +89,7 @@ export function InteriorScene(props: SceneProps) {
   const midX = (WX0 + GX1) / 2;
 
   return (
-    <SceneSvg viewBox="0 0 1200 760" title={props.title} className={props.className} still={props.still}>
+    <SceneSvg viewBox={props.compact ? "70 24 1060 720" : "0 0 1200 760"} title={props.title} className={props.className} still={props.still}>
       <defs>
         <GrainPattern id={id('grain')} />
         <linearGradient id={id('floor')} x1="0" y1="0" x2="0" y2="1">
@@ -124,8 +124,8 @@ export function InteriorScene(props: SceneProps) {
           <stop offset="1" stopColor="#141c26" stopOpacity="0" />
         </linearGradient>
         <linearGradient id={id('leftShade')} x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="#8f97a6" />
-          <stop offset="1" stopColor="#b4bac4" />
+          <stop offset="0" stopColor="#a39f9a" />
+          <stop offset="1" stopColor="#c6c3be" />
         </linearGradient>
         <linearGradient id={id('rightLight')} x1="1" y1="0" x2="0" y2="0">
           <stop offset="0" stopColor="#141c26" stopOpacity="0.08" />
@@ -133,8 +133,8 @@ export function InteriorScene(props: SceneProps) {
           <stop offset="1" stopColor="#fffaf0" stopOpacity={glowWall * 0.3} />
         </linearGradient>
         <linearGradient id={id('ceilShade')} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#9aa0ab" />
-          <stop offset="1" stopColor="#d4d7dc" />
+          <stop offset="0" stopColor="#a8a7a5" />
+          <stop offset="1" stopColor="#dddbd7" />
         </linearGradient>
         <radialGradient id={id('warm')}>
           <stop offset="0" stopColor="#fff2d2" stopOpacity="1" />
@@ -204,13 +204,15 @@ export function InteriorScene(props: SceneProps) {
       ))}
 
       {/* ---------- light on the planes ---------- */}
+      {/* blend layers sit outside the clipped group: a clip isolates its children */}
+      <path d={CEIL} fill={url('ceilShade')} pointerEvents="none" style={{ mixBlendMode: 'multiply' }} opacity="0.5" />
       <g clipPath={url('cCeil')} pointerEvents="none">
-        <path d={CEIL} fill={url('ceilShade')} style={{ mixBlendMode: 'multiply' }} opacity="0.5" />
         <ellipse cx="600" cy="40" rx="330" ry="90" fill={url('warm')} opacity={glowCeil} />
         <rect x="0" y={BY0 - 16} width="1200" height="16" fill={url('aoUp')} />
       </g>
+      {/* blend layers sit outside the clipped group: a clip isolates its children */}
+      <path d={BACK} fill={url('grain')} pointerEvents="none" style={{ mixBlendMode: 'overlay' }} opacity="0.22" />
       <g clipPath={url('cBack')} pointerEvents="none">
-        <path d={BACK} fill={url('grain')} style={{ mixBlendMode: 'soft-light' }} opacity="0.22" />
         <path d={BACK} fill={url('backLight')} />
         <rect x={BX0} y={BY0} width={BX1 - BX0} height="46" fill={url('aoDown')} />
         <rect x={BX0} y={BY0} width="34" height={BY1 - BY0} fill={url('aoRight')} />
@@ -221,15 +223,17 @@ export function InteriorScene(props: SceneProps) {
         <rect x="380" y="400" width="450" height="130" rx="40" fill="#141c26" opacity="0.18" filter={url('blur')} />
         <rect x="522" y="240" width="170" height="112" fill="#141c26" opacity="0.14" filter={url('blurS')} />
       </g>
+      {/* blend layers sit outside the clipped group: a clip isolates its children */}
+      <path d={LEFT} fill={url('leftShade')} pointerEvents="none" style={{ mixBlendMode: 'multiply' }} opacity="0.55" />
+      <path d={LEFT} fill={url('grain')} pointerEvents="none" style={{ mixBlendMode: 'overlay' }} opacity="0.22" />
       <g clipPath={url('cLeft')} pointerEvents="none">
-        <path d={LEFT} fill={url('leftShade')} style={{ mixBlendMode: 'multiply' }} opacity="0.55" />
-        <path d={LEFT} fill={url('grain')} style={{ mixBlendMode: 'soft-light' }} opacity="0.22" />
         <ellipse cx={midX + 10} cy={(winTop(midX)[1] + winBot(midX)[1]) / 2} rx="150" ry="240" fill={url('daylight')} opacity={glowWall * 1.4} />
         <rect x={BX0 - 30} y="0" width="30" height="760" fill={url('aoLeft')} />
       </g>
+      {/* blend layers sit outside the clipped group: a clip isolates its children */}
+      <path d={RIGHT} fill={url('grain')} pointerEvents="none" style={{ mixBlendMode: 'overlay' }} opacity="0.22" />
       <g clipPath={url('cRight')} pointerEvents="none">
         <path d={RIGHT} fill={url('rightLight')} />
-        <path d={RIGHT} fill={url('grain')} style={{ mixBlendMode: 'soft-light' }} opacity="0.22" />
         <rect x={BX1} y="0" width="30" height="760" fill={url('aoRight')} />
       </g>
 
@@ -252,8 +256,6 @@ export function InteriorScene(props: SceneProps) {
         <path d={glass} fill={url('outside')} />
         <g clipPath={url('cGlass')}>
           <path d={`M${WX0} 400 C 100 380 140 395 ${GX1} 372 V 500 H ${WX0} Z`} fill="#6f8e60" opacity="0.6" />
-          <circle cx="92" cy="350" r="26" fill="#5f8050" opacity="0.7" />
-          <circle cx="160" cy="356" r="20" fill="#6d8f5c" opacity="0.6" />
           <rect x={WX0} y="0" width="140" height="760" fill="#fff" opacity="0.12" />
         </g>
         {/* frame */}

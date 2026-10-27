@@ -17,6 +17,8 @@ import { isOpenNow, shortHours, useCartMessage } from './message';
 
 /** Pages that carry their own WhatsApp actions (cart summary, checkout alternative, order follow-up). */
 const HIDDEN = /^\/(korpa|placanje|narudzba\/)/;
+/** Tool pages have their own WhatsApp actions and bottom-anchored panels on phones — keep the button desktop-only there. */
+const DESKTOP_ONLY = /^\/(ngjyra|ndricimi|lista-ofertes)/;
 
 /**
  * Height of any full-width bar pinned to the bottom of the viewport (the product page's sticky
@@ -133,6 +135,7 @@ export function FloatingWhatsApp() {
       className={cn(
         'fixed bottom-4 right-4 z-30 flex flex-col items-end transition-[opacity,transform] duration-300 ease-out sm:bottom-6 sm:right-6',
         cartOpen && 'pointer-events-none opacity-0',
+        DESKTOP_ONLY.test(pathname) && 'max-lg:hidden',
       )}
       // float above the product page's sticky add-to-cart bar (or any other bottom bar)
       style={{ transform: `translateY(${cartOpen ? 8 : lift ? -(lift - 4) : 0}px)` }}

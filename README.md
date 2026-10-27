@@ -9,6 +9,15 @@ ngrohje, kundër zjarrit — dhe ngjyra, llaqe & fasada*. Built on the same plat
   blog ("Këshilla"), CMS pages, search and a wishlist.
 - **Request-a-price products**: items without a published price show **"Kërko çmimin"** with an enquiry form (it
   lands in the CMS) and a WhatsApp button, never "0 €".
+- **Made for how Denisi Color sells**:
+  - **Lista e ofertës** (`/lista-ofertes`): collect many request-a-price items with quantities and send ONE request by
+    form or WhatsApp. In the CMS it becomes a B2B quote in one click.
+  - **WhatsApp ordering**: a floating button with quick intents, plus "Porosit me WhatsApp" from the cart, checkout and
+    order confirmation. Each sends the full order as a ready message.
+  - **Provo ngjyrën** (`/ngjyra`): an interactive colour studio. Paint a house facade or a living room from 74 shades
+    (demo codes), compare, save favourites and send the combination for an offer.
+  - **Sa drita më duhen?** (`/ndricimi`): a lighting planner. Rooms and m² (with a × flats multiplier for contractors)
+    give a clearly labelled estimate of the shop's own fittings, added to the quote list in one click.
 - **CMS** (`/admin`): overview, orders, drafts and returns, products, collections and inventory, customers, discounts
   and offers, the homepage builder, content and menus, markets, analytics, contacts with B2B quotes, appointments,
   and settings with roles. Neutral design, Albanian by default.

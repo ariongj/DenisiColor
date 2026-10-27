@@ -236,12 +236,13 @@ export function FacadeScene(props: SceneProps) {
         <rect x="640" y="64" width="28" height="18" fill={`url(#${id('soffit')})`} />
         <path d="M635 58 H684 L687 64 H633 Z" fill="#8d8a84" />
         <rect x="633" y="64" width="54" height="5" fill="#6d6a65" />
-        <rect x="640" y="64" width="28" height="78" fill={`url(#${id('grain')})`} style={{ mixBlendMode: 'soft-light' }} opacity="0.45" />
+        <rect x="640" y="64" width="28" height="78" fill={`url(#${id('grain')})`} pointerEvents="none" style={{ mixBlendMode: 'overlay' }} opacity="0.45" />
       </g>
 
       {/* ---------- light & shadow on the front plane ---------- */}
+      {/* blend layers sit outside the clipped group: a clip isolates its children */}
+      <rect x={FL - 4} y={WT} width={FR - FL + 4} height={G - WT} fill={`url(#${id('grain')})`} pointerEvents="none" style={{ mixBlendMode: 'overlay' }} opacity="0.4" />
       <g clipPath={`url(#${id('front')})`} pointerEvents="none">
-        <rect x={FL - 4} y={WT} width={FR - FL + 4} height={G - WT} fill={`url(#${id('grain')})`} style={{ mixBlendMode: 'soft-light' }} opacity="0.32" />
         <rect x={FL - 4} y={WT} width={FR - FL + 4} height={G - WT} fill={`url(#${id('sun')})`} />
         <rect x={FL - 4} y={WT} width={FR - FL + 4} height="70" fill={`url(#${id('soffit')})`} />
         <rect x={FL - 4} y={G - 26} width={FR - FL + 4} height="26" fill={`url(#${id('contact')})`} />
@@ -257,9 +258,10 @@ export function FacadeScene(props: SceneProps) {
       </g>
 
       {/* ---------- side wall: cool shade ---------- */}
+      {/* blend layers sit outside the clipped group: a clip isolates its children */}
+      <path d={sideQuad(0, 1, WT, G)} fill="#a9a8a8" pointerEvents="none" style={{ mixBlendMode: 'multiply' }} opacity="0.62" />
+      <path d={sideQuad(0, 1, WT, G)} fill={`url(#${id('grain')})`} pointerEvents="none" style={{ mixBlendMode: 'overlay' }} opacity="0.4" />
       <g clipPath={`url(#${id('side')})`} pointerEvents="none">
-        <path d={sideQuad(0, 1, WT, G)} fill="#98a0ae" style={{ mixBlendMode: 'multiply' }} opacity="0.72" />
-        <path d={sideQuad(0, 1, WT, G)} fill={`url(#${id('grain')})`} style={{ mixBlendMode: 'soft-light' }} opacity="0.3" />
         <path d={sideQuad(0, 1, WT, WT + 60)} fill={`url(#${id('soffit')})`} />
         <path d={sideQuad(0, 1, G - 26, G)} fill={`url(#${id('contact')})`} />
         <path d={sideQuad(0, 0.02, WT, G)} fill="#000" opacity="0.08" />

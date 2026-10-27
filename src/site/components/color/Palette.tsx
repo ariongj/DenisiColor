@@ -1,7 +1,7 @@
 // The fan-deck panel: search, colour families, swatches and a free colour picker.
 // Desktop: a scrollable 4-column grid with family headers. Phone: a two-row horizontal strip.
-import { useMemo, useState } from 'react';
-import { Check, Pipette, Search, X } from 'lucide-react';
+import { useMemo, useRef, useState } from 'react';
+import { Check, ChevronRight, Pipette, Search, X } from 'lucide-react';
 import { useDict, useL, useLang } from '@/i18n';
 import { cn } from '@/lib/utils';
 import { CS } from './dict';
@@ -14,6 +14,7 @@ export function PalettePanel({ current, onPick, className }: { current?: Paint; 
   const [q, setQ] = useState('');
   const [family, setFamily] = useState<FamilyId | 'all'>('all');
   const [hexDraft, setHexDraft] = useState('');
+  const famRef = useRef<HTMLDivElement>(null);
 
   const list = useMemo(() => {
     const f = foldText(q.trim()).replace(/^#/, '');
@@ -48,7 +49,8 @@ export function PalettePanel({ current, onPick, className }: { current?: Paint; 
       </div>
 
       {/* families */}
-      <div className="no-scrollbar -mx-4 mt-3 flex gap-1.5 overflow-x-auto px-4 lg:mx-0 lg:flex-wrap lg:px-0" role="tablist" aria-label={t('palette')}>
+      <div className="relative -mx-4 mt-3 sm:-mx-5">
+      <div ref={famRef} className="no-scrollbar flex gap-1.5 overflow-x-auto scroll-smooth px-4 sm:px-5 sm:pr-14 [mask-image:linear-gradient(to_right,black_85%,transparent)]" role="tablist" aria-label={t('palette')}>
         {[{ id: 'all' as const, name: null }, ...FAMILIES].map((f) => {
           const on = family === f.id && !q.trim();
           const dots = f.id === 'all' ? ['#F3EEDF', '#6E8CA3', '#B96B4C'] : SWATCHES.filter((s) => s.family === f.id).filter((_, i) => i % 3 === 1).slice(0, 3).map((s) => s.hex);
@@ -76,6 +78,10 @@ export function PalettePanel({ current, onPick, className }: { current?: Paint; 
             </button>
           );
         })}
+      </div>
+        <button type="button" onClick={() => famRef.current?.scrollBy({ left: 180 })} aria-label={t('all')} tabIndex={-1} className="absolute right-3 top-1/2 hidden h-7 w-7 -translate-y-1/2 place-items-center rounded-full bg-white text-ink shadow ring-1 ring-line hover:bg-sand sm:grid">
+          <ChevronRight className="h-4 w-4" />
+        </button>
       </div>
 
       {/* swatches */}

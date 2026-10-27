@@ -163,8 +163,8 @@ const p = (code: string): Paint => ({ hex: swatch(code)!.hex, code });
 
 /** "Before" state used by the compare slider: bare render / the room as it is today. */
 export const EXISTING: Record<SceneId, Paints> = {
-  facade: { walls: { hex: '#CBC7BE' }, accent: { hex: '#CBC7BE' }, plinth: { hex: '#9C988F' }, trim: { hex: '#D6D3CB' } },
-  interior: { walls: { hex: '#E6E1D7' }, accent: { hex: '#E6E1D7' }, ceiling: { hex: '#EDEAE3' } },
+  facade: { walls: { hex: '#BCB5A7' }, accent: { hex: '#BCB5A7' }, plinth: { hex: '#8A857B' }, trim: { hex: '#C9C4B9' } },
+  interior: { walls: { hex: '#DCD6CA' }, accent: { hex: '#DCD6CA' }, ceiling: { hex: '#E6E2DA' } },
 };
 
 export interface Scheme {

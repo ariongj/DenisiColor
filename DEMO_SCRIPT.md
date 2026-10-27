@@ -22,9 +22,19 @@ pre-filled, click "Hyr"). Locally: `npm run dev` → http://localhost:5173 and /
   WhatsApp (the message is pre-filled with the product name).
 - Checkout: Kosovo cities and delivery zones, cash on delivery / bank transfer / card (simulated) → confirmation `DC-…`.
 
+## 2b. The tools that make it theirs (4 min)
+- **Provo ngjyrën** (menu): paint the facade (walls, accent, plinth, trim), apply "Mesdhetare", drag the before/after
+  slider, switch to the living room, then "Kërko ofertë për këto ngjyra".
+- **Planifiko ndriçimin**: click "Shembull: banesë 2+1", set "× 6 banesa", add a 300 m² yard, then "Shto të gjitha
+  në listën e ofertës". The quote list opens with 36 ceiling lights, street lights and LED strips.
+- **Lista e ofertës**: add 40 × LED 36W from a product page and send the list. Show the "Dërgo në WhatsApp" message too.
+- The floating **WhatsApp** button, and "Porosit me WhatsApp" in the cart: the whole order arrives as one message.
+
 ## 3. The "wow" moment (1 min)
 - The order appears **instantly** in the CMS (bell, toast, overview numbers).
-- The price enquiry lands in **Kontaktet**, ready to turn into a **B2B quote** (Oferta) with prices.
+- The quote list lands in **Kontaktet** as one enquiry with a product table. Click **"Krijo ofertë nga lista"**: the
+  B2B quote is prefilled line by line, and staff only type the prices. The colour studio enquiry shows the chosen
+  swatches.
 
 ## 4. The CMS (7 min)
 - **Përmbledhje**: sales, new orders, low stock, new contacts and "Kërkojnë vëmendje".
