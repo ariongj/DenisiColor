@@ -841,7 +841,7 @@ function NumField({ label, value, onChange, locked, step, suffix, warn, warnText
             className={cn(
               'h-8 w-full rounded-md border pl-2 text-right text-[13.5px] tabular-nums text-ink outline-none transition-colors focus:border-ink/40 focus:ring-4 focus:ring-ink/5',
               warn ? 'border-amber-500 bg-amber-50 ring-2 ring-amber-400/25' : 'border-line bg-white',
-              suffix ? 'pr-8' : 'pr-2',
+              suffix ? (suffix.length > 2 ? 'pr-11' : 'pr-8') : 'pr-2',
             )}
           />
           {suffix && <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[11.5px] text-muted">{suffix}</span>}
