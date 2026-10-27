@@ -39,6 +39,11 @@ export interface InquiryInput {
   preferredDate?: string;
   source?: Inquiry['source'];
   company?: string;
+  tags?: string[];
+  /** Quote list ("Lista e ofertës") items */
+  lines?: Inquiry['lines'];
+  /** Colour studio picks */
+  colors?: Inquiry['colors'];
 }
 
 /** CMS v2 lists that support the generic upsert/remove actions. */
