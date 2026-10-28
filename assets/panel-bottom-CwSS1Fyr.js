@@ -1,0 +1,1 @@
+import{N as e}from"./Button-81cp_uvi.js";var t=e(`panel-bottom`,[[`rect`,{width:`18`,height:`18`,x:`3`,y:`3`,rx:`2`,key:`afitv7`}],[`path`,{d:`M3 15h18`,key:`5xshup`}]]);export{t};
