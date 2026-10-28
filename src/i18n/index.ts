@@ -2,10 +2,11 @@ import { useCallback } from 'react';
 import { useUi } from '@/store/ui';
 import type { L10n, Lang } from '@/lib/types';
 
+/** Albanian is the shop's main language, English the second; `me` holds Serbian (off unless enabled in Settings). */
 export const LANGS: { code: Lang; label: string; short: string; htmlLang: string }[] = [
-  { code: 'me', label: 'Srpski', short: 'SR', htmlLang: 'sr-Latn' },
   { code: 'sq', label: 'Shqip', short: 'SQ', htmlLang: 'sq' },
   { code: 'en', label: 'English', short: 'EN', htmlLang: 'en' },
+  { code: 'me', label: 'Srpski', short: 'SR', htmlLang: 'sr-Latn' },
 ];
 
 export type Scope = 'site' | 'admin';
@@ -42,7 +43,7 @@ export function useDict<T extends Record<string, string>>(
 ) {
   const lang = useLang(scope);
   return useCallback(
-    (key: keyof T & string, vars?: Vars) => interpolate((dict[lang][key] ?? dict.me[key] ?? key) as string, vars),
+    (key: keyof T & string, vars?: Vars) => interpolate((dict[lang][key] ?? dict.sq[key] ?? dict.me[key] ?? key) as string, vars),
     [dict, lang],
   );
 }

@@ -3,15 +3,10 @@ import { Copy } from 'lucide-react';
 import type { L10n, Lang } from '@/lib/types';
 import { Label, Hint } from '@/components/ui/Field';
 import { useDict, useLang } from '@/i18n';
+import { useActiveLangs } from '@/i18n/active';
 import { adm } from '@/admin/i18n';
 import { cn } from '@/lib/utils';
 
-// `me` is the Serbian (SR) key — Albanian comes first, it is the shop's main language.
-const LANGS: { code: Lang; short: string }[] = [
-  { code: 'sq', short: 'SQ' },
-  { code: 'me', short: 'SR' },
-  { code: 'en', short: 'EN' },
-];
 
 /**
  * One field, three languages. Tabs show a dot when a translation is missing.
@@ -41,6 +36,7 @@ export function L10nInput({
   mono?: boolean;
 }) {
   const adminLang = useLang('admin');
+  const langs = useActiveLangs();
   const [lang, setLang] = useState<Lang>(adminLang);
   const t = useDict(adm, 'admin');
   const id = useId();
@@ -60,13 +56,13 @@ export function L10nInput({
           <span />
         )}
         <div className="flex items-center gap-1">
-          {lang !== 'me' && !v[lang]?.trim() && v.me?.trim() && (
-            <button type="button" onClick={() => set(v.me)} className="mr-1 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-semibold text-muted hover:bg-canvas hover:text-ink" title={t('copyFromMe')}>
-              <Copy className="h-3 w-3" /> SR
+          {lang !== 'sq' && !v[lang]?.trim() && v.sq?.trim() && (
+            <button type="button" onClick={() => set(v.sq)} className="mr-1 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-semibold text-muted hover:bg-canvas hover:text-ink" title={t('copyFromMe')}>
+              <Copy className="h-3 w-3" /> SQ
             </button>
           )}
           <div className="flex rounded-lg bg-canvas p-0.5">
-            {LANGS.map((l) => {
+            {langs.map((l) => {
               const missing = !v[l.code]?.trim();
               return (
                 <button

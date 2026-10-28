@@ -118,6 +118,15 @@ function Root() {
   useLayoutEffect(() => setAdminTheme(admin), [admin]);
   useEffect(() => applyBrand(brand), [brand]);
   useEffect(() => startCrossTabSync(), []);
+  // A language switched off in Settings (e.g. Serbian) falls back to Albanian, the shop's main language
+  const languages = useDb((s) => s.settings.languages);
+  const lang = useUi((s) => s.lang);
+  const adminLang = useUi((s) => s.adminLang);
+  useEffect(() => {
+    const on = (l: keyof typeof languages) => l === 'sq' || languages[l];
+    if (!on(lang)) useUi.getState().setLang('sq');
+    if (!on(adminLang)) useUi.getState().setAdminLang('sq');
+  }, [languages, lang, adminLang]);
   useEffect(() => {
     const fn = () => {
       const ui = useUi.getState();

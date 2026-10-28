@@ -21,7 +21,7 @@ export function LanguagesSection({ s, set }: SectionProps) {
     <SectionCard id="languages" icon={Languages} title={t('s_languages')} description={t('s_languages_d')}>
       <div className="divide-y divide-line/70">
         {LANGS.map((l) => {
-          const primary = l.code === 'me';
+          const primary = l.code === 'sq';
           return (
             <ToggleRow
               key={l.code}
@@ -31,7 +31,7 @@ export function LanguagesSection({ s, set }: SectionProps) {
               description={t(`lang_${l.code}_d` as Key)}
               checked={primary || s.languages[l.code]}
               disabled={primary}
-              onChange={(v) => set('languages', { ...s.languages, me: true, [l.code]: v })}
+              onChange={(v) => set('languages', { ...s.languages, sq: true, [l.code]: v })}
             />
           );
         })}

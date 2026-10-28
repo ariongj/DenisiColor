@@ -1,4 +1,5 @@
 import { useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
+import { useActiveLangs } from '@/i18n/active';
 import { Bold, ChevronDown, CircleHelp, Columns2, Copy, Eye, Heading2, Heading3, Info, Italic, Link2, List, ListOrdered, PenLine, TextQuote } from 'lucide-react';
 import { Markdown } from '@/components/ui/Markdown';
 import { useDict, useLang } from '@/i18n';
@@ -8,7 +9,6 @@ import { ed } from './i18n';
 import { countWords, readMinutesFor } from './hooks';
 import { langShort } from '@/admin/i18n';
 
-const LANGS: Lang[] = ['me', 'sq', 'en'];
 type Mode = 'write' | 'split' | 'preview';
 type BlockKind = 'h2' | 'h3' | 'ul' | 'ol' | 'quote';
 
@@ -38,6 +38,7 @@ export function MarkdownEditor({
   previewHeader?: (lang: Lang) => ReactNode;
   className?: string;
 }) {
+  const langs = useActiveLangs().map((l) => l.code);
   const t = useDict(ed, 'admin');
   const adminLang = useLang('admin');
   const [lang, setLang] = useState<Lang>(adminLang);
@@ -227,7 +228,7 @@ export function MarkdownEditor({
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-line/70 bg-canvas/40 px-3 py-2 sm:px-4">
         <div className="flex rounded-lg bg-canvas p-0.5">
-          {LANGS.map((code) => {
+          {langs.map((code) => {
             const missing = !v[code]?.trim();
             return (
               <button

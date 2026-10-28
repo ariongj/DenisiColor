@@ -1,4 +1,5 @@
 import { useState, type KeyboardEvent } from 'react';
+import { useActiveLangs } from '@/i18n/active';
 import { Check, Plus, X } from 'lucide-react';
 import { Label } from '@/components/ui/Field';
 import { Button } from '@/components/ui/Button';
@@ -9,15 +10,15 @@ import { ed } from './i18n';
 import { langShort } from '@/admin/i18n';
 
 const LANGS: { code: Lang; ph: string }[] = [
-  { code: 'me', ph: 'npr. Prozori' },
-  { code: 'sq', ph: 'p.sh. Dritare' },
-  { code: 'en', ph: 'e.g. Windows' },
+  { code: 'sq', ph: 'p.sh. Ndriçim' },
+  { code: 'en', ph: 'e.g. Lighting' },
+  { code: 'me', ph: 'npr. Rasveta' },
 ];
 
 const empty = (): L10n => ({ me: '', sq: '', en: '' });
-const key = (t: L10n) => t.me.trim().toLowerCase();
+const key = (t: L10n) => (t.sq || t.me).trim().toLowerCase();
 
-/** Localized tag chips: add (ME/SQ/EN at once), click to edit, × to remove, plus quick picks. */
+/** Localized tag chips: add (SQ/EN at once, SR when enabled), click to edit, × to remove, plus quick picks. */
 export function TagsEditor({ value, onChange, suggestions = [] }: { value: L10n[]; onChange: (v: L10n[]) => void; suggestions?: L10n[] }) {
   const t = useDict(ed, 'admin');
   const l = useL('admin');
@@ -26,11 +27,14 @@ export function TagsEditor({ value, onChange, suggestions = [] }: { value: L10n[
 
   const used = new Set(value.map(key));
   const quick = suggestions.filter((s) => !used.has(key(s)));
-  const canSubmit = !!form.me.trim() && (editing !== null || !used.has(key(form)));
+  const active = useActiveLangs();
+  const fields = LANGS.filter((f) => active.some((a) => a.code === f.code));
+  const canSubmit = !!form.sq.trim() && (editing !== null || !used.has(key(form)));
 
   const submit = () => {
     if (!canSubmit) return;
-    const tag: L10n = { me: form.me.trim(), sq: form.sq.trim(), en: form.en.trim() };
+    // Serbian falls back to the Albanian text while that language is switched off
+    const tag: L10n = { me: form.me.trim() || form.sq.trim(), sq: form.sq.trim(), en: form.en.trim() };
     onChange(editing === null ? [...value, tag] : value.map((x, i) => (i === editing ? tag : x)));
     setForm(empty());
     setEditing(null);
@@ -102,8 +106,8 @@ export function TagsEditor({ value, onChange, suggestions = [] }: { value: L10n[
           <p className="text-[12.5px] text-muted">{t('noTags')}</p>
         )}
 
-        <div className="grid gap-2 sm:grid-cols-[repeat(3,minmax(0,1fr))_auto]">
-          {LANGS.map(({ code, ph }) => (
+        <div className={cn('grid gap-2', fields.length === 3 ? 'sm:grid-cols-[repeat(3,minmax(0,1fr))_auto]' : 'sm:grid-cols-[repeat(2,minmax(0,1fr))_auto]')}>
+          {fields.map(({ code, ph }) => (
             <label key={code} className="flex h-9 items-center overflow-hidden rounded-lg border border-line bg-white transition focus-within:border-ink/40 focus-within:ring-4 focus-within:ring-ink/5">
               <span className="grid h-full w-9 shrink-0 place-items-center border-r border-line bg-canvas/70 text-[10.5px] font-extrabold tracking-wide text-muted">{langShort(code)}</span>
               <input

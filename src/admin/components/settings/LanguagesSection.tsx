@@ -30,7 +30,7 @@ const LG = defineDict({
     coverage_h: 'Nazivi proizvoda, kategorija, kolekcija, stranica i blog članaka.',
     missing: 'Bez prevoda: {n}',
     complete: 'Kompletno',
-    adminNote: 'Panel administracije je uvek dostupan na sva tri jezika (podrazumevano albanski). Isključeni jezici nestaju iz izbora jezika na sajtu — srpski je za sada isključen i može se uključiti kada prevodi budu spremni.',
+    adminNote: 'Sajt i panel koriste iste jezike: albanski je glavni, engleski se bira gornjim prekidačem. Isključeni jezici nestaju iz izbora jezika na sajtu i u panelu — srpski je za sada isključen i može se uključiti kada prevodi budu spremni.',
   },
   sq: {
     colLang: 'Gjuha',
@@ -52,7 +52,7 @@ const LG = defineDict({
     coverage_h: 'Emrat e produkteve, kategorive, koleksioneve, faqeve dhe artikujve të blogut.',
     missing: 'Pa përkthim: {n}',
     complete: 'I plotë',
-    adminNote: 'Paneli i administrimit është gjithmonë në dispozicion në të tria gjuhët (parazgjedhur shqip). Gjuhët e çaktivizuara zhduken nga zgjedhja e gjuhës në faqe — serbishtja tani për tani është joaktive dhe mund të aktivizohet kur përkthimet të jenë gati.',
+    adminNote: 'Faqja dhe paneli përdorin të njëjtat gjuhë: shqipja është gjuha kryesore, anglishtja zgjidhet me çelësin lart. Gjuhët e çaktivizuara zhduken nga zgjedhja e gjuhës në faqe dhe në panel — serbishtja tani për tani është joaktive dhe mund të aktivizohet kur përkthimet të jenë gati.',
   },
   en: {
     colLang: 'Language',
@@ -74,7 +74,7 @@ const LG = defineDict({
     coverage_h: 'Product, category, collection, page and blog post titles.',
     missing: 'Untranslated: {n}',
     complete: 'Complete',
-    adminNote: 'The admin panel is always available in all three languages (Albanian by default). Disabled languages disappear from the site’s language switcher — Serbian is off for now and can be switched on once the translations are ready.',
+    adminNote: 'The site and the panel use the same languages: Albanian is the main language, English is one click away in the top switch. Disabled languages disappear from the language switcher on the site and in the panel — Serbian is off for now and can be switched on once the translations are ready.',
   },
 });
 type LgKey = keyof typeof LG.me;

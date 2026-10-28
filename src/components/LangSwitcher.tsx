@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { Check, ChevronDown, Globe } from 'lucide-react';
 import { LANGS, type Scope } from '@/i18n';
+import { useActiveLangs } from '@/i18n/active';
 import { useUi } from '@/store/ui';
-import { useDb } from '@/store/db';
 import { cn } from '@/lib/utils';
 
 export function LangSwitcher({ scope = 'site', tone = 'dark', align = 'right', compact }: { scope?: Scope; tone?: 'dark' | 'light'; align?: 'left' | 'right'; compact?: boolean }) {
   const lang = useUi((s) => (scope === 'admin' ? s.adminLang : s.lang));
   const setLang = useUi((s) => (scope === 'admin' ? s.setAdminLang : s.setLang));
-  const enabled = useDb((s) => s.settings.languages);
+  const active = useActiveLangs();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -21,7 +21,7 @@ export function LangSwitcher({ scope = 'site', tone = 'dark', align = 'right', c
     return () => document.removeEventListener('mousedown', fn);
   }, [open]);
 
-  const langs = scope === 'admin' ? LANGS : LANGS.filter((l) => enabled[l.code]);
+  const langs = active;
   const current = LANGS.find((l) => l.code === lang)!;
 
   return (

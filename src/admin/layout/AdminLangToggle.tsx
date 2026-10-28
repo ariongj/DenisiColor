@@ -1,19 +1,21 @@
-import { LANGS, useDict } from '@/i18n';
+import { useDict } from '@/i18n';
+import { useActiveLangs } from '@/i18n/active';
 import { adm } from '@/admin/i18n';
 import { useUi } from '@/store/ui';
 import { cn } from '@/lib/utils';
 
 /**
- * ME / SQ / EN segmented switch for the CMS language (independent of the storefront language).
+ * SQ / EN segmented switch (plus SR when Serbian is enabled) for the CMS language (independent of the storefront language).
  * `full` stretches the three buttons over the available width (drawer, account menu).
  */
 export function AdminLangToggle({ tone = 'dark', full }: { tone?: 'dark' | 'light'; full?: boolean }) {
   const lang = useUi((s) => s.adminLang);
   const setLang = useUi((s) => s.setAdminLang);
   const t = useDict(adm, 'admin');
+  const langs = useActiveLangs();
   return (
     <div role="radiogroup" aria-label={t('adminLang')} className={cn('items-center gap-0.5 rounded-lg p-0.5', full ? 'flex w-full' : 'inline-flex', tone === 'dark' ? 'bg-white/[0.08] ring-1 ring-white/10' : 'bg-[#f1f1f1] ring-1 ring-black/[0.06]')}>
-      {LANGS.map((l) => {
+      {langs.map((l) => {
         const on = l.code === lang;
         return (
           <button

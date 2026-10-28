@@ -1,10 +1,11 @@
 // Side panels shared by the page and post editors (PDF p.36): publishing, SEO, organisation.
+import { useActiveLangs } from '@/i18n/active';
 import { useId, type ReactNode } from 'react';
 import { CalendarClock, CircleCheck, CircleDashed, EyeOff, Lock } from 'lucide-react';
 import { Card } from '@/admin/components/kit';
 import { L10nInput } from '@/admin/components/L10nInput';
 import { useDict, useLang } from '@/i18n';
-import type { L10n, Lang } from '@/lib/types';
+import type { L10n } from '@/lib/types';
 import { date } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import { cx } from './dict';
@@ -108,15 +109,15 @@ export function PublishCard({
 /* ------------------------------------------------------------------ */
 /* SEO: Google preview + SEO title / description per language + slug   */
 /* ------------------------------------------------------------------ */
-const LANGS: Lang[] = ['me', 'sq', 'en'];
 
 function CountHint({ value, limit }: { value: L10n; limit: number }) {
   const t = useDict(cx, 'admin');
+  const langs = useActiveLangs().map((l) => l.code);
   return (
     <span className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5">
       <span>{t('seoLimit', { n: limit })}</span>
       <span className="flex gap-2 tabular-nums">
-        {LANGS.map((l) => {
+        {langs.map((l) => {
           const n = value[l]?.trim().length ?? 0;
           return (
             <span key={l} className={cn(n > limit ? 'font-semibold text-red-600' : n ? 'text-ink-soft' : 'text-muted/70')}>
